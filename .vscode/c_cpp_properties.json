@@ -14,7 +14,10 @@
         "/home/quintinumi/git_package_src/wpr_simulation/src/wpb_home/wpb_home_tutorials/include/**",
         "/home/quintinumi/git_package_src/wpr_simulation/src/wpb_home/wpbh_local_planner/include/**",
         "/home/quintinumi/git_package_src/wpr_simulation/src/wpr_simulation/include/**",
-        "/usr/include/**"
+        "/usr/include/**",
+        "/usr/include/**",
+        "/usr/local/include/**",
+        "/home/quintinumi/project/ws_camera_calibration/src/camera_caliberation/src/include/**"
       ],
       "name": "ROS",
       "intelliSenseMode": "gcc-x64",
