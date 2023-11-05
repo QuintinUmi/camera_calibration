@@ -17,7 +17,8 @@
         "/usr/include/**",
         "/usr/include/**",
         "/usr/local/include/**",
-        "/home/quintinumi/project/ws_camera_calibration/src/camera_caliberation/src/include/**"
+        "/home/quintinumi/project/ws_camera_caliberation/src/camera_caliberation/src/camera_caliberation_pkg/include/**"
+        
       ],
       "name": "ROS",
       "intelliSenseMode": "gcc-x64",
