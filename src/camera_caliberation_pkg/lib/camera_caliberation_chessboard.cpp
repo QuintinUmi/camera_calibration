@@ -41,7 +41,7 @@ bool CamCalChessboard::get_images_from_path(string path)
         return FAILD_PROCESS;
 }
 
-vector<cv::Point2f> CamCalChessboard::find_image_chessboard_corners(cv::Mat* srcImage, bool cornerShow = false, int criteriaIterTimes = 100, double iterDifference = 0.001)
+vector<cv::Point2f> CamCalChessboard::find_image_chessboard_corners(cv::Mat* srcImage, bool cornerShow, int criteriaIterTimes, double iterDifference)
 {
     
     vector<cv::Point2f> imagePoints;
@@ -79,7 +79,7 @@ vector<cv::Point3f> CamCalChessboard::find_object_chessboard_corners()
 }
 
 
-bool CamCalChessboard::caliberation_process(bool cornerShow = false, int criteriaIterTimes = 100, double iterDifference = 0.001)
+bool CamCalChessboard::caliberation_process(bool cornerShow, int criteriaIterTimes, double iterDifference)
 {   
     cv::Mat grayImage;
     vector<cv::Point2f> imagePoints;
@@ -118,20 +118,23 @@ bool CamCalChessboard::caliberation_process(bool cornerShow = false, int criteri
                         this->disCoffes, 
                         this->rvecs, 
                         this->tvecs);
+
+    return true;
 }
 
 bool CamCalChessboard::save_caliberation_parm_yaml(string savePath)
 {
-    YAML::Node node; 
-
-    node["cameraMatrix"] = this->cameraMatrix;
-    node["disCoffes"] = this->disCoffes;
-    node["rvecs"] = this->rvecs;
-    node["tvecs"] = this->tvecs;
-
+    
     savePath = savePath + "caliberation_parm.yaml";
 
-    ofstream fout(savePath);
-    fout << node;
-    fout.close();
+    cv::FileStorage fs(savePath ,cv::FileStorage::WRITE); 
+
+    fs << "cameraMatrix" << this->cameraMatrix;
+    fs << "disCoffes" << this->disCoffes;
+    fs << "rvecs" << this->rvecs;
+    fs << "tvecs" << this->tvecs;
+
+    fs.release(); 
+     
+    return true;
 }

@@ -125,6 +125,7 @@ include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
+  /home/quintinumi/project/ws_camera_caliberation/src/camera_caliberation/src/camera_caliberation_pkg/include/
 )
 
 ## Declare a C++ library
