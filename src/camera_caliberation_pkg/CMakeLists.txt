@@ -125,19 +125,28 @@ include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
-  /home/quintinumi/project/ws_camera_caliberation/src/camera_caliberation/src/camera_caliberation_pkg/include/
+  ./include/
 )
 
 ## Declare a C++ library
 add_library(camera_caliberation_lib
-  include/camera_caliberation_chessboard.h
-  include/param_code.h
+  include include/camera_caliberation_chessboard.h
+  include include/param_code.h
   lib/camera_caliberation_chessboard.cpp
+)
+add_library(undistortion_lib
+  include include/camera_caliberation_chessboard.h
+  include include/undistortion.h
+  lib/undistortion.cpp
 )
 
 add_dependencies(camera_caliberation_lib ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(undistortion_lib ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 target_link_libraries(camera_caliberation_lib
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(undistortion_lib
   ${catkin_LIBRARIES}
 )
 
@@ -150,6 +159,7 @@ target_link_libraries(camera_caliberation_lib
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(camera_caliberation src/camera_caliberation.cpp)
+add_executable(undistortion_sample src/undistortion_sample.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -166,6 +176,14 @@ target_link_libraries(camera_caliberation
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
   camera_caliberation_lib
+  yaml-cpp
+)
+
+target_link_libraries(undistortion_sample
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+  camera_caliberation_lib
+  undistortion_lib
   yaml-cpp
 )
 

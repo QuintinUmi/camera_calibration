@@ -6,6 +6,7 @@
 #include <pthread.h>
 #include <iostream>
 #include <fstream>
+#include <ctime>
 
 #include <std_msgs/String.h>
 #include <sensor_msgs/Image.h>
@@ -29,27 +30,54 @@ CamCalChessboard::CamCalChessboard(cv::Size chessboardSize, double squareSize)
     this->chessboardSize = chessboardSize;
     this->squareSize = squareSize;
 }
+CamCalChessboard::CamCalChessboard(){
 
-bool CamCalChessboard::get_images_from_path(string path)
+}
+
+bool CamCalChessboard::get_images_from_path(string path, string image_format)
 {
-    cv::String searchPath = path + "*.png";
+    std::cout << "Path: " << path <<std::endl;
+    cv::String searchPath = path + string("*.") + image_format;
+    
     cv::glob(searchPath, this->imagePaths);
 
-    if(!this->imagePaths.size())
+    if(this->imagePaths.size()){
+        this->imgSize.width = cv::imread(imagePaths[0]).cols;
+        this->imgSize.height = cv::imread(imagePaths[0]).rows;
+        printf("Image width: %d, height: %d\n", this->imgSize.width, this->imgSize.height);
         return SUCCESS_PROCESS;
+    }
     else
         return FAILD_PROCESS;
 }
 
+int CamCalChessboard::get_images_num()
+{
+    return this->imagePaths.size();
+}
+
+void CamCalChessboard::show_src_image(int index)
+{
+    cv::Mat img = cv::imread(this->imagePaths[index]);
+    cv::imshow("imgShow", img);
+    cv::waitKey(0);
+}
+
+cv::Mat CamCalChessboard::get_src_image(int index, int flags)
+{
+    return cv::imread(this->imagePaths[index], flags);
+} 
+
 vector<cv::Point2f> CamCalChessboard::find_image_chessboard_corners(cv::Mat* srcImage, bool cornerShow, int criteriaIterTimes, double iterDifference)
 {
-    
+    cv::Mat grayImage;
+    cv::cvtColor(*srcImage, grayImage, cv::COLOR_BGR2GRAY);
     vector<cv::Point2f> imagePoints;
 
-    bool patternWasFound = cv::findChessboardCorners(*srcImage, this->chessboardSize, imagePoints);
+    bool patternWasFound = cv::findChessboardCorners(grayImage, this->chessboardSize, imagePoints);
     if(patternWasFound)
     {
-        cv::cornerSubPix(*srcImage, imagePoints, cv::Size(11, 11), cv::Size(-1, -1),
+        cv::cornerSubPix(grayImage, imagePoints, cv::Size(11, 11), cv::Size(-1, -1),
                         cv::TermCriteria(cv::TermCriteria::EPS + cv::TermCriteria::COUNT, criteriaIterTimes, iterDifference));
     }
     else
@@ -63,6 +91,7 @@ vector<cv::Point2f> CamCalChessboard::find_image_chessboard_corners(cv::Mat* src
     {
         cv::drawChessboardCorners(*srcImage, this->chessboardSize, imagePoints, patternWasFound);
         cv::imshow("cornerShow", *srcImage);
+        cv::waitKey(0);
     }
 
     return imagePoints;     
@@ -85,21 +114,21 @@ bool CamCalChessboard::caliberation_process(bool cornerShow, int criteriaIterTim
     vector<cv::Point2f> imagePoints;
     vector<cv::Point3f> objectPoints;
 
+    printf("Size of imagePaths: %ld\n", this->imagePaths.size());
     for(int i = 0; i < this->imagePaths.size(); i++)
     {
-        grayImage = cv::imread(this->imagePaths[i], cv::IMREAD_GRAYSCALE);
+        grayImage = cv::imread(this->imagePaths[i]);
 
         printf("Proccess image %d: ", i + 1);
 
         imagePoints = this->find_image_chessboard_corners(&grayImage, cornerShow, criteriaIterTimes, iterDifference);
         if(imagePoints.size())
         {
-            printf("Success!\n");
-
             objectPoints = this->find_object_chessboard_corners();
 
             this->imagePoints.emplace_back(imagePoints);
             this->objectPoints.emplace_back(objectPoints);
+            printf("Success!\n");
 
         }
         else
@@ -110,6 +139,8 @@ bool CamCalChessboard::caliberation_process(bool cornerShow, int criteriaIterTim
         
     }
 
+    printf("Camera Caliberating...");
+
     cv::calibrateCamera(this->objectPoints, 
                         this->imagePoints, 
                         this->imgSize, 
@@ -119,22 +150,33 @@ bool CamCalChessboard::caliberation_process(bool cornerShow, int criteriaIterTim
                         this->rvecs, 
                         this->tvecs);
 
+    printf("Finished!\n");
+
     return true;
 }
 
 bool CamCalChessboard::save_caliberation_parm_yaml(string savePath)
 {
+
+    printf("Intrinsics & Extrinsics Parameters Saving...");
     
-    savePath = savePath + "caliberation_parm.yaml";
+    savePath = savePath + "caliberation_param.yaml";
 
     cv::FileStorage fs(savePath ,cv::FileStorage::WRITE); 
 
+    time_t now = time(nullptr);
+    fs << "caliberationTimeChar" << ctime(&now);
+    fs << "caliberationTime_t" << int(now);
+    fs << "imageWidth" << this->imgSize.width;
+    fs << "imageHeight" << this->imgSize.height;
     fs << "cameraMatrix" << this->cameraMatrix;
     fs << "disCoffes" << this->disCoffes;
     fs << "rvecs" << this->rvecs;
     fs << "tvecs" << this->tvecs;
 
     fs.release(); 
+
+    printf("Finished!\n");
      
     return true;
 }
