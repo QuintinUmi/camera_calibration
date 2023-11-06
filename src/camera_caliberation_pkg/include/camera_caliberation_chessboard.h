@@ -1,5 +1,5 @@
-#ifndef _CALIBERATION_TOOL_H_
-#define _CALIBERATION_TOOL_H_
+#ifndef _CALIBERATION_CHESSBOARD_H_
+#define _CALIBERATION_CHESSBOARD_H_
 
 #include <ros/ros.h>
 #include <stdio.h>
@@ -30,7 +30,11 @@ class CamCalChessboard
     public:
 
         CamCalChessboard(cv::Size chessboardSize, double squareSize);
-        bool get_images_from_path(string path);
+        CamCalChessboard();
+        bool get_images_from_path(string path, string image_format);
+        int get_images_num();
+        void show_src_image(int index);
+        cv::Mat get_src_image(int index, int flags = 1); 
         vector<cv::Point2f> find_image_chessboard_corners(cv::Mat* srcImage, bool cornerShow = false, int criteriaIterTimes = 100, double iterDifference = 0.001);
         vector<cv::Point3f> find_object_chessboard_corners();
         bool caliberation_process(bool cornerShow = false, int criteriaIterTimes = 100, double iterDifference = 0.001);
@@ -39,6 +43,7 @@ class CamCalChessboard
     private:
 
         vector<cv::String> imagePaths;
+        string image_format;
         cv::Size imgSize;
 
         cv::Size chessboardSize;
