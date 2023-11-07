@@ -159,6 +159,7 @@ target_link_libraries(undistortion_lib
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(camera_caliberation src/camera_caliberation.cpp)
+add_executable(opencv_undistortion_time_cost_test src/opencv_undistortion_time_cost_test.cpp)
 add_executable(undistortion_sample src/undistortion_sample.cpp)
 
 ## Rename C++ executable without prefix
@@ -180,6 +181,14 @@ target_link_libraries(camera_caliberation
 )
 
 target_link_libraries(undistortion_sample
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+  camera_caliberation_lib
+  undistortion_lib
+  yaml-cpp
+)
+
+target_link_libraries(opencv_undistortion_time_cost_test
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
   camera_caliberation_lib
