@@ -62,4 +62,8 @@ To use these nodes, please use launch file for transmitting server parameters.
 
 Please use launch command to run the nodes. Before use it, please edit the yaml file in ./config folder.
 
+<br />
+
+Contributor: QuintinUmi
+
 
