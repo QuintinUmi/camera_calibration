@@ -32,35 +32,34 @@ camera_caliberation_pkg
         ├── package.xml
         └── src
             ├── camera_caliberation.cpp
-            ├── opencv_undistortion_time_cost_test.cpp
             ├── show_distorted_grid_pattern.cpp
             └── undistortion_sample.cpp
 ```
 
+<br />
+
+## Node File Description
+
+###This project includes 1 package (camera_caliberation_pkg) and 3 nodes (camera_caliberation; show_distorted_grid_pattern; undistortion_sample).
+
+Node "camera_caliberation" is to do caliberation for camera.
+Node "show_distorted_grid_pattern" can show the comparison between distorted and undistorted grid pattern for reference.
+Node "undistortion_sample" is a sample to show the image after undistortion proccess.
+
+To use these nodes, please use launch file for transmitting server parameters.
+
+### Example for Node "show_distorted_grid_pattern"
 
 <br />
 <p align="center">
-  <a href="https://github.com/QuintinUmi/camera_caliberation/">
-    <img src="src/camera_caliberation_pkg/config/distortion_gridpattern_compare1.png" alt="Logo" width="80" height="80">
-  </a>
-
-  <h3 align="center">"完美的"README模板</h3>
-  <p align="center">
-    一个"完美的"README模板去快速开始你的项目！
-    <br />
-    <a href="https://github.com/shaojintian/Best_README_template"><strong>探索本项目的文档 »</strong></a>
-    <br />
-    <br />
-    <a href="https://github.com/shaojintian/Best_README_template">查看Demo</a>
-    ·
-    <a href="https://github.com/shaojintian/Best_README_template/issues">报告Bug</a>
-    ·
-    <a href="https://github.com/shaojintian/Best_README_template/issues">提出新特性</a>
-  </p>
-
+        <a href="https://github.com/QuintinUmi/camera_caliberation/">
+            <img src="src/camera_caliberation_pkg/config/distortion_gridpattern_compare1.png" alt="distortion_gridpattern_compare1"/>
+            <img src="src/camera_caliberation_pkg/config/distortion_gridpattern_compare2.png" alt="distortion_gridpattern_compare1"/>     
+        </a>
 </p>
-[issues-url]: https://img.shields.io/github/issues/shaojintian/Best_README_template.svg
-[license-shield]: https://img.shields.io/github/license/shaojintian/Best_README_template.svg?style=flat-square
-[license-url]: https://github.com/shaojintian/Best_README_template/blob/master/LICENSE.txt
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/shaojintian
+
+## Launch File Description
+
+Please use launch command to run the nodes. Before use it, please edit the yaml file in ./config folder.
+
+
