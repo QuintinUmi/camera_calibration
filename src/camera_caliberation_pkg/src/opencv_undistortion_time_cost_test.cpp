@@ -14,6 +14,7 @@ int main(int argc, char **argv) {
     ros::NodeHandle rosHandle;
     
     cv::String yamlPath;
+    cv::String InstrinsicsFilePath;
     std::string imageFormat;
     cv::String imagePath;
 
@@ -22,8 +23,8 @@ int main(int argc, char **argv) {
     rosHandle.param("image_load_path", imagePath, cv::String("~/"));
     rosHandle.param("image_format", imageFormat, std::string("png"));
 
-    yamlPath = yamlPath + "caliberation_param.yaml";
-    cv::FileStorage fs(yamlPath, FileStorage::READ);
+    InstrinsicsFilePath = yamlPath + "caliberation_param.yaml";
+    cv::FileStorage fs(InstrinsicsFilePath, FileStorage::READ);
     int image_width{0}, image_height{0};
     fs["imageWidth"] >> image_width;
     fs["imageHeight"] >> image_height;
