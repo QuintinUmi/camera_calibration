@@ -9,9 +9,9 @@ yaml_save_path: /home/quintinumi/project/ws_camera_caliberation/src/camera_calib
 
 chessboard_width: 6
 chessboard_height: 9
-square_size: 20
+square_size: 28.9
 
 criteria_iter_times: 10000
 iter_difference: 0.000001
 
-show_corners_image: true
+show_corners_image: false
