@@ -138,8 +138,8 @@ bool CamCalChessboard::caliberation_process(bool cornerShow, int criteriaIterTim
         }
         
     }
-
     printf("Camera Caliberating...");
+    fflush(stdout); 
 
     cv::calibrateCamera(this->objectPoints, 
                         this->imagePoints, 
@@ -159,6 +159,7 @@ bool CamCalChessboard::save_caliberation_parm_yaml(string savePath)
 {
 
     printf("Intrinsics & Extrinsics Parameters Saving...");
+    fflush(stdout); 
     
     savePath = savePath + "caliberation_param.yaml";
 
