@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
     }
 
     cv::Mat outputImage2;
-    cv::addWeighted(gridPattern, 0.5, distortedGridPattern, 0.5, 3.0, outputImage2);
+    cv::addWeighted(gridPattern, 0.35, distortedGridPattern, 0.65, 3.0, outputImage2);
 
 
     for(int i = 0; i <= (cols - 1) / 2; i++){
