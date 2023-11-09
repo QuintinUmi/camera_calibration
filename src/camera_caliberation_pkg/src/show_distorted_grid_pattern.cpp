@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
     cv::Mat map1, map2;
     cv::Mat newCameraMatrix = cv::getOptimalNewCameraMatrix(cameraMatrix, disCoffes, image_size, 1.0);
     cv::initUndistortRectifyMap(cameraMatrix, disCoffes, cv::Mat(), newCameraMatrix, image_size, CV_16SC2, map1, map2);
-    cv::remap(gridPattern, distortedGridPattern, map2, map1, cv::INTER_LINEAR);
+    cv::remap(gridPattern, distortedGridPattern, map1, map2, cv::INTER_LINEAR);
 
 
 
@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
     }
 
     
-
+    std::cout << map1.size << std::endl;
     cv::Mat outputImage1 = distortedGridPattern;
     cv::imshow("Distorted Grid Pattern1", outputImage1);
     cv::imshow("Distorted Grid Pattern2", outputImage2);
@@ -129,5 +129,6 @@ int main(int argc, char *argv[])
         cv::imwrite(yamlPath + cv::String("distortion_gridpattern_compare2.png"), outputImage2);
     }
 
+    rosHandle.shutdown();
     return 0;
 }
