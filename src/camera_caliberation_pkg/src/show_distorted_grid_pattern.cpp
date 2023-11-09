@@ -61,11 +61,32 @@ int main(int argc, char *argv[])
     cv::Mat distortedGridPattern(image_height, image_width, CV_8UC3, cv::Scalar(255, 255, 255));
 
     cv::Mat map1, map2;
+    cv::Mat newMap1, newMap2;
+
     cv::Mat newCameraMatrix = cv::getOptimalNewCameraMatrix(cameraMatrix, disCoffes, image_size, 1.0);
-    cv::initUndistortRectifyMap(cameraMatrix, disCoffes, cv::Mat(), newCameraMatrix, image_size, CV_16SC2, map1, map2);
-    cv::remap(gridPattern, distortedGridPattern, map1, map2, cv::INTER_LINEAR);
-
-
+    cv::initUndistortRectifyMap(cameraMatrix, disCoffes, cv::Mat(), newCameraMatrix, image_size, CV_32FC2, map1, map2);
+    newMap1.create(map1.size(), CV_32FC2);
+    newMap2.create(map2.size(), CV_8U);
+    for(int y = 0; y < map1.rows; y++)
+    {
+        for(int x = 0; x < map1.cols; x++)
+        {
+            newMap1.at<cv::Vec2f>(y, x) = static_cast<cv::Vec2f>(cv::Vec2f(2.0 * x, 2.0 * map1.at<cv::Vec2f>(y, x)[1]) - map1.at<cv::Vec2f>(y, x));
+            // std::cout << "newMap1.at<cv::Vec2i>(" << y << ", " << x << ") = " << map1.at<cv::Vec2f>(y, x) << "|| map1.at<cv::Vec2s> = " << map1.at<cv::Vec2f>(y, x) << std::endl;
+        }
+    }
+    for(int y = 0; y < map2.rows; y++)
+    {
+        for(int x = 0; x < map2.cols; x++)
+        {
+            newMap2.at<uchar>(y, x) = static_cast<uchar>(y + y - map2.at<uchar>(y, x));
+            printf("newMap1.at<uchar>(%d, %d) = %d || map1.at<uchar> = %d\n", y, x, newMap2.at<uchar>(y, x), map2.at<uchar>(y, x));
+        }
+    }
+    std::cout << map1.type() << std::endl;
+    std::cout << map2.type() << std::endl;
+    cv::remap(gridPattern, distortedGridPattern, newMap1, newMap2, cv::INTER_LINEAR);
+    
 
     gridPattern = cv::Mat(image_height, image_width, CV_8UC3, cv::Scalar(255, 255, 255));
 
@@ -116,7 +137,6 @@ int main(int argc, char *argv[])
     }
 
     
-    std::cout << map1.size << std::endl;
     cv::Mat outputImage1 = distortedGridPattern;
     cv::imshow("Distorted Grid Pattern1", outputImage1);
     cv::imshow("Distorted Grid Pattern2", outputImage2);
