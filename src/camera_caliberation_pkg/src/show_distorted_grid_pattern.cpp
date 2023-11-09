@@ -1,4 +1,6 @@
 #include <ros/ros.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <time.h>
@@ -67,12 +69,15 @@ int main(int argc, char *argv[])
     cv::initUndistortRectifyMap(cameraMatrix, disCoffes, cv::Mat(), newCameraMatrix, image_size, CV_32FC2, map1, map2);
     newMap1.create(map1.size(), CV_32FC2);
     newMap2.create(map2.size(), CV_8U);
+
+    
+    float maxShrinkRatio = 0.0;
     for(int y = 0; y < map1.rows; y++)
     {
         for(int x = 0; x < map1.cols; x++)
         {
-            newMap1.at<cv::Vec2f>(y, x) = static_cast<cv::Vec2f>(cv::Vec2f(2.0 * x, 2.0 * map1.at<cv::Vec2f>(y, x)[1]) - map1.at<cv::Vec2f>(y, x));
-            // std::cout << "newMap1.at<cv::Vec2i>(" << y << ", " << x << ") = " << map1.at<cv::Vec2f>(y, x) << "|| map1.at<cv::Vec2s> = " << map1.at<cv::Vec2f>(y, x) << std::endl;
+            newMap1.at<cv::Vec2f>(y, x) = static_cast<cv::Vec2f>(cv::Vec2f(2.0 * x, 2.0 * y) - map1.at<cv::Vec2f>(y, x));
+            // std::cout << "newMap1.at<cv::Vec2i>(" << y << ", " << x << ") = " << newMap1.at<cv::Vec2f>(y, x) << "|| map1.at<cv::Vec2s> = " << map1.at<cv::Vec2f>(y, x) << std::endl;
         }
     }
     for(int y = 0; y < map2.rows; y++)
@@ -80,9 +85,12 @@ int main(int argc, char *argv[])
         for(int x = 0; x < map2.cols; x++)
         {
             newMap2.at<uchar>(y, x) = static_cast<uchar>(y + y - map2.at<uchar>(y, x));
-            printf("newMap1.at<uchar>(%d, %d) = %d || map1.at<uchar> = %d\n", y, x, newMap2.at<uchar>(y, x), map2.at<uchar>(y, x));
+            // printf("newMap1.at<uchar>(%d, %d) = %d || map1.at<uchar> = %d\n", y, x, newMap2.at<uchar>(y, x), map2.at<uchar>(y, x));
         }
     }
+
+
+
     std::cout << map1.type() << std::endl;
     std::cout << map2.type() << std::endl;
     cv::remap(gridPattern, distortedGridPattern, newMap1, newMap2, cv::INTER_LINEAR);
