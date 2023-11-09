@@ -2,10 +2,11 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
 
-#include "camera_caliberation_chessboard.h"
+#include "camera_caliberation_tool.h"
 
 using namespace cv;
 using namespace std;
+using namespace cct;
 
 int main(int argc, char **argv) {
 
@@ -15,7 +16,6 @@ int main(int argc, char **argv) {
     cv::String yamlPath;
     std::string imageFormat;
     cv::String imagePath;
-
 
     rosHandle.param("yaml_save_path", yamlPath, cv::String("~/"));
     rosHandle.param("image_load_path", imagePath, cv::String("~/"));

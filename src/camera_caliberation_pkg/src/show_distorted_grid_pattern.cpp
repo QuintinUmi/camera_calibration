@@ -5,8 +5,9 @@
 #include <opencv2/opencv.hpp>
 #include <time.h>
 
-#include "camera_caliberation_chessboard.h"
+#include "camera_caliberation_tool.h"
 
+using namespace cct;
 
 int main(int argc, char *argv[])
 {

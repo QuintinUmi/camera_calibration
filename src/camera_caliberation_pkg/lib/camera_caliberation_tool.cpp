@@ -7,6 +7,8 @@
 #include <iostream>
 #include <fstream>
 #include <ctime>
+#include <unistd.h>
+#include <stdlib.h>
 
 #include <std_msgs/String.h>
 #include <sensor_msgs/Image.h>
@@ -18,12 +20,12 @@
 
 #include "image_transport/image_transport.h"
 
-#include "camera_caliberation_chessboard.h"
+#include "camera_caliberation_tool.h"
 #include "param_code.h"
 
 
 using namespace std;
-
+using namespace cct;
 
 CamCalChessboard::CamCalChessboard(cv::Size chessboardSize, double squareSize)
 {
@@ -38,6 +40,7 @@ bool CamCalChessboard::get_images_from_path(string path, string image_format)
 {
     std::cout << "Path: " << path <<std::endl;
     cv::String searchPath = path + string("*.") + image_format;
+    this->searchPath = searchPath;
     
     cv::glob(searchPath, this->imagePaths);
 
@@ -113,6 +116,7 @@ bool CamCalChessboard::caliberation_process(bool cornerShow, int criteriaIterTim
     cv::Mat grayImage;
     vector<cv::Point2f> imagePoints;
     vector<cv::Point3f> objectPoints;
+    cv::Mat cache1, cache2;
 
     printf("Size of imagePaths: %ld\n", this->imagePaths.size());
     for(int i = 0; i < this->imagePaths.size(); i++)
@@ -146,9 +150,56 @@ bool CamCalChessboard::caliberation_process(bool cornerShow, int criteriaIterTim
                         this->imgSize, 
 
                         this->cameraMatrix, 
-                        this->disCoffes, 
-                        this->rvecs, 
-                        this->tvecs);
+                        this->disCoffes,
+                        cache1, cache2);
+
+    printf("Finished!\n");
+
+    printf("Camera Undistortion Caliberating...\n");
+    fflush(stdout); 
+
+    cv::Mat srcImage, undistortedImage;
+    cv::Mat newCamMat, map1, map2;
+
+    newCamMat = cv::getOptimalNewCameraMatrix(this->cameraMatrix, this->disCoffes, this->imgSize, 0.0);
+    cv::initUndistortRectifyMap(this->cameraMatrix, this->disCoffes, cv::Mat(), newCamMat, this->imgSize, CV_32FC2, map1, map2);
+
+    for(int i = 0; i < this->imagePaths.size(); i++)
+    {
+        srcImage = cv::imread(this->imagePaths[i]);
+
+        printf("Undistort and process image %d: ", i + 1);
+
+        cv::remap(srcImage, undistortedImage, map1, map2, cv::INTER_LINEAR);
+
+        imagePoints = this->find_image_chessboard_corners(&undistortedImage, cornerShow, criteriaIterTimes, iterDifference);
+        if(imagePoints.size())
+        {
+            objectPoints = this->find_object_chessboard_corners();
+
+            this->newImagePoints.emplace_back(imagePoints);
+            this->newObjectPoints.emplace_back(objectPoints);
+            printf("Success!\n");
+
+        }
+        else
+        {
+            printf("Faild!\n");
+            continue;
+        }
+        
+    }
+
+
+    printf("Processing...");
+    fflush(stdout); 
+    cv::calibrateCamera(this->newObjectPoints, 
+                        this->newImagePoints, 
+                        this->imgSize, 
+
+                        this->newCameraMatrix, 
+                        this->newDisCoffes,
+                        cache1, cache1);
 
     printf("Finished!\n");
 
@@ -172,8 +223,11 @@ bool CamCalChessboard::save_caliberation_parm_yaml(string savePath)
     fs << "imageHeight" << this->imgSize.height;
     fs << "cameraMatrix" << this->cameraMatrix;
     fs << "disCoffes" << this->disCoffes;
-    fs << "rvecs" << this->rvecs;
-    fs << "tvecs" << this->tvecs;
+    // fs << "rvecs" << this->rvecs;
+    // fs << "tvecs" << this->tvecs;
+
+    fs << "newCameraMatrix" << this->newCameraMatrix;
+    fs << "newDisCoffes" << this->newDisCoffes;
 
     fs.release(); 
 

@@ -130,12 +130,12 @@ include_directories(
 
 ## Declare a C++ library
 add_library(camera_caliberation_lib
-  include include/camera_caliberation_chessboard.h
+  include include/camera_caliberation_tool.h
   include include/param_code.h
-  lib/camera_caliberation_chessboard.cpp
+  lib/camera_caliberation_tool.cpp
 )
 add_library(undistortion_lib
-  include include/camera_caliberation_chessboard.h
+  include include/camera_caliberation_tool.h
   include include/undistortion.h
   lib/undistortion.cpp
 )
