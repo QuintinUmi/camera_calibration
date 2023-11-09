@@ -8,7 +8,7 @@ image_format: png
 yaml_save_path: /home/quintinumi/project/ws_camera_caliberation/src/camera_caliberation/src/camera_caliberation_pkg/config/
 
 chessboard_width: 6
-chessboard_height: s9
+chessboard_height: 9
 square_size: 20
 
 criteria_iter_times: 10000
