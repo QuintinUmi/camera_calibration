@@ -10,13 +10,22 @@ using namespace cct;
 Undistortion::Undistortion(){
 
 }
-Undistortion::Undistortion(cv::Mat cameraMatrix, cv::Mat disCoffes){
+Undistortion::Undistortion(cv::Mat cameraMatrix, cv::Mat disCoffes, cv::Size image_size, double alpha){
     this->cameraMatrix = cameraMatrix;
     this->disCoffes = disCoffes;
+    this->image_size = image_size;
+    this->alpha = alpha;
+
+
+    cv::Mat map1, map2;
+    cv::Mat newMap1, newMap2;
+
+    cv::Mat newCameraMatrix = cv::getOptimalNewCameraMatrix(cameraMatrix, disCoffes, image_size, alpha);
+    cv::initUndistortRectifyMap(cameraMatrix, disCoffes, cv::Mat(), newCameraMatrix, image_size, CV_32FC2, this->map1, this->map2);
 }
 
-bool Undistortion::undistortion(cv::Mat* srcImage, cv::Mat* undistortedImage)
+bool Undistortion::undistortion_process(cv::Mat &srcImage, cv::Mat &undistortedImage)
 {
-    cv::undistort(*srcImage, *undistortedImage, this->cameraMatrix, this->disCoffes);
+    cv::remap(srcImage, undistortedImage, this->map1, this->map2, cv::INTER_LINEAR);
     return true;
 }

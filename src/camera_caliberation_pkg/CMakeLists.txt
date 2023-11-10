@@ -162,6 +162,7 @@ add_executable(camera_caliberation src/camera_caliberation.cpp)
 add_executable(opencv_undistortion_time_cost_test src/opencv_undistortion_time_cost_test.cpp)
 add_executable(undistortion_sample src/undistortion_sample.cpp)
 add_executable(show_distorted_grid_pattern src/show_distorted_grid_pattern.cpp)
+add_executable(chessboard_cam_ext_caliberation src/chessboard_cam_ext_caliberation.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -198,6 +199,14 @@ target_link_libraries(opencv_undistortion_time_cost_test
 )
 
 target_link_libraries(show_distorted_grid_pattern
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+  camera_caliberation_lib
+  undistortion_lib
+  yaml-cpp
+)
+
+target_link_libraries(chessboard_cam_ext_caliberation
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
   camera_caliberation_lib

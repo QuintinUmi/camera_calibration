@@ -105,7 +105,7 @@ vector<cv::Point3f> CamCalChessboard::find_object_chessboard_corners()
     vector<cv::Point3f> objectPoints;
     for (int i = 0; i < this->chessboardSize.height; i++)
         for (int j = 0; j < this->chessboardSize.width; j++)
-            objectPoints.emplace_back(j * this->squareSize, i * this->squareSize, 0);
+            objectPoints.emplace_back(j * this->squareSize, i * this->squareSize, 0.0);
 
     return objectPoints;
 }
@@ -234,4 +234,72 @@ bool CamCalChessboard::save_caliberation_parm_yaml(string savePath)
     printf("Finished!\n");
      
     return true;
+}
+
+
+
+
+
+
+/************************************************************************************/
+
+
+CamCalExt::CamCalExt(){
+
+}
+CamCalExt::CamCalExt(CamCalChessboard camCalCB){
+
+}
+CamCalExt::CamCalExt(cv::Mat cameraMatrix, cv::Mat disCoffes){
+    this->set_intrinsics(cameraMatrix, disCoffes);
+}
+
+bool CamCalExt::set_points_n_points(vector<cv::Point3f> worldPoints, vector<cv::Point2f> imagePoints)
+{
+    this->worldPoints = worldPoints;
+    this->imagePoints = imagePoints;
+    return true;
+}
+
+bool CamCalExt::set_intrinsics(cv::Mat cameraMatrix, cv::Mat disCoffes)
+{
+    this->cameraMatrix = cameraMatrix;
+    this->disCoffes = disCoffes;
+    return true;
+}
+bool CamCalExt::set_extrinsics(cv::Mat rvec, cv::Mat tvec)
+{
+    this->rvec = rvec;
+    this->tvec = tvec;
+    return true;
+}
+
+vector<cv::Mat> CamCalExt::ext_cal_one_frame()
+{
+    cv::Mat rvec, tvec;
+    cv::solvePnP(this->worldPoints, this->imagePoints, this->cameraMatrix, this->disCoffes, rvec, tvec);
+    vector<cv::Mat> extrinsics_matrix;
+    extrinsics_matrix.emplace_back(rvec);
+    extrinsics_matrix.emplace_back(tvec);
+    return extrinsics_matrix;
+}
+
+void CamCalExt::mapping_3d_to_2d_one_frame(vector<cv::Point3f> &worldPoints, vector<cv::Point2f> &imagePoints, cv::Mat rvec, cv::Mat tvec, 
+                                            cv::Mat cameraMatrix, cv::Mat disCoffes)
+{
+    if(rvec.empty()){
+        rvec = this->rvec;
+    }
+    if(tvec.empty()){
+        tvec = this->tvec;
+    }
+    if(cameraMatrix.empty()){
+        cameraMatrix = this->cameraMatrix;
+    }
+    if(disCoffes.empty()){
+        disCoffes = this->disCoffes;
+    }
+    
+    cv::projectPoints(worldPoints, rvec, tvec, cameraMatrix, disCoffes, imagePoints);
+    
 }

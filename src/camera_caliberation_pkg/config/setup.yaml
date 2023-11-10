@@ -1,17 +1,20 @@
 
-# image_load_path: /home/quintinumi/project/camera_calibration_img/
-# image_format: png
-
 image_load_path: /home/quintinumi/project/camera_calibration_img/
 image_format: png
 
-yaml_save_path: /home/quintinumi/project/ws_camera_caliberation/src/camera_caliberation/src/camera_caliberation_pkg/config/
-
 chessboard_width: 6
 chessboard_height: 9
-square_size: 20
 
-criteria_iter_times: 10000
-iter_difference: 0.000001
+# image_load_path: /home/quintinumi/project/IR_camera_calib_img/
+# image_format: png
+
+yaml_save_path: /home/quintinumi/project/ws_camera_caliberation/src/camera_caliberation/src/camera_caliberation_pkg/config/
+
+# chessboard_width: 8
+# chessboard_height: 11
+square_size: 28.9
+
+criteria_iter_times: 1000000
+iter_difference: 0.00000001
 
 show_corners_image: false
