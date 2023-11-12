@@ -82,11 +82,16 @@ namespace cct{
             CamCalExt(cv::Mat cameraMatrix, cv::Mat disCoffes);
 
             bool set_points_n_points(vector<cv::Point3f> worldPoints, vector<cv::Point2f> imagePoints);
+
             bool set_intrinsics(cv::Mat cameraMatrix, cv::Mat disCoffes);
             bool set_extrinsics(cv::Mat rvec, cv::Mat tvec);
+
             vector<cv::Mat> ext_cal_one_frame();
+
             void mapping_3d_to_2d_one_frame(vector<cv::Point3f> &worldPoints, vector<cv::Point2f> &imagePoints, cv::Mat rvec = cv::Mat(), cv::Mat tvec = cv::Mat(), 
                                             cv::Mat cameraMatrix = cv::Mat(), cv::Mat disCoffes = cv::Mat());
+            void mapping_points_3d_to_2d(vector<cv::Point3f> &worldPoints, vector<cv::Point2f> &imagePoints, cv::Mat rvec, cv::Mat tvec, 
+                                            cv::Mat cameraMatrix, cv::Mat disCoffes = cv::Mat());
 
         private:
 

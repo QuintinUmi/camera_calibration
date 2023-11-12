@@ -16,6 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
 )
 
+find_package(Eigen3 REQUIRED)
 find_package(OpenCV 4 REQUIRED)
 find_package(yaml-cpp REQUIRED)
 
@@ -139,14 +140,22 @@ add_library(undistortion_lib
   include include/undistortion.h
   lib/undistortion.cpp
 )
+add_library(drawing_tool_lib
+  include include/drawing_tool.h
+  lib/drawing_tool.cpp
+)
 
 add_dependencies(camera_caliberation_lib ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(undistortion_lib ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(drawing_tool_lib ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 target_link_libraries(camera_caliberation_lib
   ${catkin_LIBRARIES}
 )
 target_link_libraries(undistortion_lib
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(drawing_tool_lib
   ${catkin_LIBRARIES}
 )
 
@@ -210,6 +219,7 @@ target_link_libraries(chessboard_cam_ext_caliberation
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
   camera_caliberation_lib
+  drawing_tool_lib
   undistortion_lib
   yaml-cpp
 )

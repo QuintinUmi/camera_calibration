@@ -1,17 +1,57 @@
 #include <ros/ros.h>
 #include <iostream>
-#include <opencv2/opencv.hpp>
 #include <Eigen/Core>
+#include <Eigen/Dense>
+#include <opencv2/opencv.hpp>
+#include <opencv2/core/eigen.hpp>
+
 
 #include "camera_caliberation_tool.h"
+#include "drawing_tool.h"
 #include "undistortion.h"
 
 
-#define PI 3.1415926535
+#define PI 3.14159265358979324
 
 using namespace cct;
+using namespace Eigen;
 
+vector<cv::Point3f> draw_cylindar_x(float cy, float cz, float start_x, float end_x, float radium, float precision = 0.1){
 
+    vector<cv::Point3f> points3D;
+    float x = 0.0, y, z, d_theta = 2 * PI / (float)int(2 * PI * radium / precision);
+
+    points3D.emplace_back(0.0, cy, cz);
+    for(int i = 0; i < int((end_x - start_x) / precision); i++){
+        x = start_x + i * precision;
+        for(int j = 0; j < int(2 * PI * radium / precision); j++){
+            y = cy + radium * cos(j * d_theta);
+            z = cz + radium * sin(j * d_theta);
+            // std::cout << cv::Point3f(x, y, z) << std::endl;
+            points3D.emplace_back(x, y, z);
+        }
+    }
+    printf("Finish Drawing Cylindar!\n");
+    return points3D;
+}
+vector<cv::Point3f> draw_cylindar_y(float cx, float cz, float start_y, float end_y, float radium, float precision = 0.1){
+
+    vector<cv::Point3f> points3D;
+    float x, y= 0.0, z, d_theta = 2 * PI / (float)int(2 * PI * radium / precision);
+
+    points3D.emplace_back(cx, 0.0, cz);
+    for(int i = 0; i < int((end_y - start_y) / precision); i++){
+        y = start_y + i * precision;
+        for(int j = 0; j < int(2 * PI * radium / precision); j++){
+            x = cx + radium * cos(j * d_theta);
+            z = cz + radium * sin(j * d_theta);
+            // std::cout << cv::Point3f(x, y, z) << std::endl;
+            points3D.emplace_back(x, y, z);
+        }
+    }
+    printf("Finish Drawing Cylindar!\n");
+    return points3D;
+}
 vector<cv::Point3f> draw_cylindar_z(float cx, float cy, float start_z, float end_z, float radium, float precision = 0.1){
 
     vector<cv::Point3f> points3D;
@@ -72,9 +112,15 @@ int main(int argc, char *argv[])
 
     CamCalChessboard camCal(chessboardSize, squareSize);
     camCal.get_images_from_path(imagePath, imageFormat);
-    vector<cv::Point3f> worldPoints1 = draw_cylindar_z(28.9, 28.9, 0.2, 4.8, 15.0, 0.1);
-    vector<cv::Point3f> worldPoints2 = draw_cylindar_z(28.9, 28.9, 0.0, 0.2, 15.0, 0.1);
-    vector<cv::Point3f> worldPoints3 = draw_cylindar_z(28.9, 28.9, 4.8, 5.0, 15.0, 0.1);
+    CamCalExt Cce(newCameraMatrix, newDisCoffes);
+    Draw3D d3d(28.9, 1, 1, -1);
+    // CamCalExt Cce(cameraMatrix, disCoffes);
+    // vector<vector<cv::Point3f>> wp = d3d.draw_ortho_coordinate_3d();
+    // vector<cv::Point3f> worldPoints1 = wp[1];
+    // vector<cv::Point3f> worldPoints2 = wp[2];
+    // vector<cv::Point3f> worldPoints3 = wp[3];
+    // d3d.transform_3d_coordinate(w3, worldPoints3, 0, PI, 0, 0, 0, 0);
+    // d3d.mirror_3d_points(worldPoints3, worldPoints3, 0, 0, 1);
 
     for(int index = 0; index < camCal.get_images_num(); index++)
     {
@@ -84,8 +130,7 @@ int main(int argc, char *argv[])
         Undistortion Und(cameraMatrix, disCoffes, image_size);
         Und.undistortion_process(srcImage, undistortedImage);
 
-        CamCalExt Cce(newCameraMatrix, newDisCoffes);
-        // CamCalExt Cce(cameraMatrix, disCoffes);
+        
         
         vector<cv::Point2f> imagePoints;
 
@@ -95,49 +140,30 @@ int main(int argc, char *argv[])
         Cce.set_points_n_points(objP, corP);
         vector<cv::Mat> ext = Cce.ext_cal_one_frame();
 
-        
-        // cv::Mat inverseZ_matrix(cv::Size(1, 3), CV_64F, _inverseZ_Matrix);
-        float _inverseZ_Matrix[3][3] = {   1, 0, 0, 
-                                            0, -1, 0,
-                                            0, 0, 1};
-        cv::Mat inverseZ_matrix(cv::Size(3, 3), CV_32F, _inverseZ_Matrix);
-        
+        d3d.draw_ortho_coordinate_2d(undistortedImage, newCameraMatrix, cv::Mat(), ext[0], ext[1]);
 
-        inverseZ_matrix.cross(inverseZ_matrix);
-        // std::cout << inverseZ_matrix << std::endl;
-        // std::cout << R << std::endl;
-        // std::cout << inverseZ_matrix.size() << std::endl;
-        // std::cout << R.size() << std::endl;
-        // // std::cout << inverseZ_matrix.cross(R) << std::endl;
-        // R.at<double>(1, 0) = -R.at<double>(1, 0);
-        // R.at<double>(1, 0) = -R.at<double>(1, 1);
-        // R.at<double>(1, 0) = -R.at<double>(1, 2);
-        // std::cout << R << std::endl;
-        // cv::Rodrigues(R, ext[0]);
-        
-        imagePoints.clear();
-        Cce.mapping_3d_to_2d_one_frame(worldPoints1, imagePoints, ext[0], ext[1], newCameraMatrix, newDisCoffes);
-        for(int i = 0; i < imagePoints.size(); i++)
-        {
-            cv::circle(undistortedImage, imagePoints[i], 2, cv::Scalar(0, 255, 120), -1);
-            // cv::circle(srcImage, imagePoints[i], 2, cv::Scalar(0, 255, 120), -1);
-        }
-        imagePoints.clear();
-        Cce.mapping_3d_to_2d_one_frame(worldPoints2, imagePoints, inverseZ_matrix + ext[0], ext[1], newCameraMatrix, newDisCoffes);      
-        for(int i = 0; i < imagePoints.size(); i++)
-        {
-            cv::circle(undistortedImage, imagePoints[i], 2, cv::Scalar(255, 0, 0), -1);
-            // cv::circle(srcImage, imagePoints[i], 2, cv::Scalar(0, 255, 120), -1);
-        }
-        imagePoints.clear();
-        Cce.mapping_3d_to_2d_one_frame(worldPoints3, imagePoints, inverseZ_matrix + ext[0], ext[1], newCameraMatrix, newDisCoffes);
-        for(int i = 0; i < imagePoints.size(); i++)
-        {
-            cv::circle(undistortedImage, imagePoints[i], 2, cv::Scalar(0, 0, 255), -1);
-            // cv::circle(srcImage, imagePoints[i], 2, cv::Scalar(0, 255, 120), -1);
-        }
-        
-        
+
+        // imagePoints.clear();
+        // Cce.mapping_3d_to_2d_one_frame(worldPoints1, imagePoints, ext[0], ext[1], newCameraMatrix, newDisCoffes);
+        // for(int i = 0; i < imagePoints.size(); i++)
+        // {
+        //     cv::circle(undistortedImage, imagePoints[i], 2, cv::Scalar(0, 0, 255), -1);
+        //     // cv::circle(srcImage, imagePoints[i], 2, cv::Scalar(0, 255, 120), -1);
+        // }
+        // imagePoints.clear();
+        // Cce.mapping_3d_to_2d_one_frame(worldPoints2, imagePoints, ext[0], ext[1], newCameraMatrix, newDisCoffes);      
+        // for(int i = 0; i < imagePoints.size(); i++)
+        // {
+        //     cv::circle(undistortedImage, imagePoints[i], 2, cv::Scalar(0, 255, 0), -1);
+        //     // cv::circle(srcImage, imagePoints[i], 2, cv::Scalar(0, 255, 120), -1);
+        // }
+        // imagePoints.clear();
+        // Cce.mapping_3d_to_2d_one_frame(worldPoints3, imagePoints, ext[0], ext[1], newCameraMatrix, newDisCoffes);
+        // for(int i = 0; i < imagePoints.size(); i++)
+        // {
+        //     cv::circle(undistortedImage, imagePoints[i], 2, cv::Scalar(255, 0, 0), -1);
+        //     // cv::circle(srcImage, imagePoints[i], 2, cv::Scalar(0, 255, 120), -1);
+        // }
         
         // Cce.mapping_3d_to_2d_one_frame(worldPoints, imagePoints, ext[0], ext[1], cameraMatrix, disCoffes);
 
@@ -146,12 +172,10 @@ int main(int argc, char *argv[])
         
         cv::imshow("Draw 3D Object on Image", undistortedImage);
         // cv::imshow("Draw 3D Object on Image", srcImage);
-        cv::waitKey();
+        cv::waitKey(0);
+
     }
     
 
     return 0;
 }
-
-
-

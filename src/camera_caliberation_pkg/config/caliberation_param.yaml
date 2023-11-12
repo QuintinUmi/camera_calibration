@@ -1,7 +1,7 @@
 %YAML:1.0
 ---
-caliberationTimeChar: "Fri Nov 10 23:53:56 2023\n"
-caliberationTime_t: 1699631636
+caliberationTimeChar: "Sat Nov 11 19:03:01 2023\n"
+caliberationTime_t: 1699700581
 imageWidth: 1280
 imageHeight: 1024
 cameraMatrix: !!opencv-matrix
@@ -22,7 +22,7 @@ newCameraMatrix: !!opencv-matrix
    cols: 3
    dt: d
    data: [ 8.6723233031300583e+02, 0., 6.4115444510450868e+02, 0.,
-       -8.6646758284465625e+02, 5.0496035028440627e+02, 0., 0., 1. ]
+       8.6646758284465625e+02, 5.0496035028440627e+02, 0., 0., 1. ]
 newDisCoffes: !!opencv-matrix
    rows: 1
    cols: 5
