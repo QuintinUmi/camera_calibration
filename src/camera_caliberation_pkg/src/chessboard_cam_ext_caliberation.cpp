@@ -114,6 +114,7 @@ int main(int argc, char *argv[])
     camCal.get_images_from_path(imagePath, imageFormat);
     CamCalExt Cce(newCameraMatrix, newDisCoffes);
     Draw3D d3d(28.9, 1, 1, -1);
+    cv::Mat testImg = cv::imread("/home/quintinumi/test.jpeg"), testImgOp;
     // CamCalExt Cce(cameraMatrix, disCoffes);
     // vector<vector<cv::Point3f>> wp = d3d.draw_ortho_coordinate_3d();
     // vector<cv::Point3f> worldPoints1 = wp[1];
@@ -168,6 +169,12 @@ int main(int argc, char *argv[])
         // Cce.mapping_3d_to_2d_one_frame(worldPoints, imagePoints, ext[0], ext[1], cameraMatrix, disCoffes);
 
         cv::drawChessboardCorners(undistortedImage, chessboardSize, corP, true);
+
+        d3d.paste_image_perspective_3d(testImg, undistortedImage, true,
+                                        newCameraMatrix, cv::Mat(), ext[0], ext[1], 
+                                        cv::Point3f(0, 0, 0), cv::Size(28.9 * 3, 28.9 * 3), 
+                                        (cv::Mat_<float>(3, 1) << 0, 0, -PI), (cv::Mat_<float>(3, 1) << 28.9 * 3, 28.9 * 3, 0));
+
         
         
         cv::imshow("Draw 3D Object on Image", undistortedImage);

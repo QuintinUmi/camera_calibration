@@ -84,6 +84,7 @@
         "geometry": "cpp",
         "core": "cpp",
         "dense": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "*.ipp": "cpp"
     }
 }
