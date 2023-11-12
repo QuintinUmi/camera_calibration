@@ -16,6 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
 )
 
+find_package(Eigen3 REQUIRED)
 find_package(OpenCV 4 REQUIRED)
 find_package(yaml-cpp REQUIRED)
 
@@ -130,23 +131,31 @@ include_directories(
 
 ## Declare a C++ library
 add_library(camera_caliberation_lib
-  include include/camera_caliberation_chessboard.h
+  include include/camera_caliberation_tool.h
   include include/param_code.h
-  lib/camera_caliberation_chessboard.cpp
+  lib/camera_caliberation_tool.cpp
 )
 add_library(undistortion_lib
-  include include/camera_caliberation_chessboard.h
+  include include/camera_caliberation_tool.h
   include include/undistortion.h
   lib/undistortion.cpp
+)
+add_library(drawing_tool_lib
+  include include/drawing_tool.h
+  lib/drawing_tool.cpp
 )
 
 add_dependencies(camera_caliberation_lib ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(undistortion_lib ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(drawing_tool_lib ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 target_link_libraries(camera_caliberation_lib
   ${catkin_LIBRARIES}
 )
 target_link_libraries(undistortion_lib
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(drawing_tool_lib
   ${catkin_LIBRARIES}
 )
 
@@ -162,6 +171,7 @@ add_executable(camera_caliberation src/camera_caliberation.cpp)
 add_executable(opencv_undistortion_time_cost_test src/opencv_undistortion_time_cost_test.cpp)
 add_executable(undistortion_sample src/undistortion_sample.cpp)
 add_executable(show_distorted_grid_pattern src/show_distorted_grid_pattern.cpp)
+add_executable(chessboard_cam_ext_caliberation src/chessboard_cam_ext_caliberation.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -201,6 +211,15 @@ target_link_libraries(show_distorted_grid_pattern
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
   camera_caliberation_lib
+  undistortion_lib
+  yaml-cpp
+)
+
+target_link_libraries(chessboard_cam_ext_caliberation
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+  camera_caliberation_lib
+  drawing_tool_lib
   undistortion_lib
   yaml-cpp
 )

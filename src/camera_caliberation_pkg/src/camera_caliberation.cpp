@@ -1,8 +1,9 @@
 #include <ros/ros.h>
 #include <opencv2/opencv.hpp>
 
-#include "camera_caliberation_chessboard.h"
+#include "camera_caliberation_tool.h"
 
+using namespace cct;
 
 int main(int argc, char *argv[])
 {
@@ -43,6 +44,7 @@ int main(int argc, char *argv[])
 	// camCal.show_src_image(0);
 	// cv::Mat srcImage = camCal.get_src_image(0);
 	// camCal.find_image_chessboard_corners(&srcImage, true);
+	printf("criteriaIterTimes: %d, iterDifference: %.10f", criteriaIterTimes, iterDifference);
 	camCal.caliberation_process(showCornersImage, criteriaIterTimes, iterDifference);
 	camCal.save_caliberation_parm_yaml(yamlPath);
 	
