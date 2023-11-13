@@ -303,52 +303,42 @@ void CamCalExt::mapping_3d_to_2d_one_frame(vector<cv::Point3f> &worldPoints, vec
     
 }
 
-void CamCalExt::mapping_points_3d_to_2d(vector<cv::Point3f> &worldPoints, vector<cv::Point2f> &pixelPoints, cv::Mat rvec, cv::Mat tvec, 
-                                            cv::Mat cameraMatrix, cv::Mat disCoffes)
-{   
-    double thetaX = rvec.at<double>(0), thetaY = rvec.at<double>(1), thetaZ = rvec.at<double>(2);
+// void CamCalExt::mapping_points_3d_to_2d(vector<cv::Point3f> &worldPoints, vector<cv::Point2f> &pixelPoints, cv::Mat rvec, cv::Mat tvec, 
+//                                             cv::Mat cameraMatrix, cv::Mat disCoffes)
+// {   
+//     double thetaX = rvec.at<double>(0), thetaY = rvec.at<double>(1), thetaZ = rvec.at<double>(2);
     
-    cv::Mat rX = (cv::Mat_<double>(3, 3) << 1.0, 0.0, 0.0,
-                                            0.0, cos(thetaX), -sin(thetaX),
-                                            0.0, sin(thetaX), cos(thetaX));
-    cv::Mat rY = (cv::Mat_<double>(3, 3) << cos(thetaY), 0.0, sin(thetaY),
-                                            0.0, 1.0, 0.0,
-                                            -sin(thetaY), 0.0, cos(thetaY));     
-    cv::Mat rZ = (cv::Mat_<double>(3, 3) << cos(thetaZ), -sin(thetaZ), 0.0,
-                                            sin(thetaZ), cos(thetaZ), 0.0,
-                                            0.0, 0.0, 1.0);    
+//     cv::Mat rX = (cv::Mat_<double>(3, 3) << 1.0, 0.0, 0.0,
+//                                             0.0, cos(thetaX), -sin(thetaX),
+//                                             0.0, sin(thetaX), cos(thetaX));
+//     cv::Mat rY = (cv::Mat_<double>(3, 3) << cos(thetaY), 0.0, sin(thetaY),
+//                                             0.0, 1.0, 0.0,
+//                                             -sin(thetaY), 0.0, cos(thetaY));     
+//     cv::Mat rZ = (cv::Mat_<double>(3, 3) << cos(thetaZ), -sin(thetaZ), 0.0,
+//                                             sin(thetaZ), cos(thetaZ), 0.0,
+//                                             0.0, 0.0, 1.0);    
 
-    cv::Mat testMatrix = (cv::Mat_<double>(4, 4) << 1.0, 0.0, 0.0, 0.0, 
-                                                    0.0, 1.0, 0.0, 0.0,
-                                                    0.0, 0.0, -1.0, 0.0,
-                                                    0.0, 0.0, 0.0, 1.0);
+//     cv::Mat testMatrix = (cv::Mat_<double>(4, 4) << 1.0, 0.0, 0.0, 0.0, 
+//                                                     0.0, 1.0, 0.0, 0.0,
+//                                                     0.0, 0.0, -1.0, 0.0,
+//                                                     0.0, 0.0, 0.0, 1.0);
     
-    cv::Mat rM = rZ * rY * rX;
+//     cv::Mat rM = rZ 
+// remote: Resolving deltas: 100% (7/7), compnts = (cv::Mat_<double>(4, 1)); 
+//     cv::Mat imagePoints = (cv::Mat_<double>(3, 1));
+//     cv::Mat _pixelPoints = (cv::Mat_<double>(3, 1));
 
-    cv::Mat tM = tvec;      
+//     // printf("------------------------------------------------------------------------\n");
+//     for(int p = 0; p < worldPoints.size(); p++){
 
-    cv::Mat wvec, midval1, midval2;
-    
-    midval1 = (cv::Mat_<double>(1, 4) << 0.0, 0.0, 0.0, 1.0);
-    cv::hconcat(rM, tM, midval2);
-    cv::vconcat(midval2, midval1, wvec);
-    
-    cv::Mat _worldPoints = (cv::Mat_<double>(4, 1));
-    cv::Mat _imagePoints = (cv::Mat_<double>(4, 1)); 
-    cv::Mat imagePoints = (cv::Mat_<double>(3, 1));
-    cv::Mat _pixelPoints = (cv::Mat_<double>(3, 1));
+//         _worldPoints = (cv::Mat_<double>(4, 1) << worldPoints[p].x, worldPoints[p].y, worldPoints[p].z, 1.0);
+//         _imagePoints = wvec * _worldPoints;
+//         imagePoints = (cv::Mat_<double>(3, 1) << _imagePoints.at<double>(0), _imagePoints.at<double>(1), _imagePoints.at<double>(2));
+//         _pixelPoints = cameraMatrix * (imagePoints / imagePoints.at<double>(2));
 
-    // printf("------------------------------------------------------------------------\n");
-    for(int p = 0; p < worldPoints.size(); p++){
+//         pixelPoints.emplace_back(_pixelPoints.at<double>(0), _pixelPoints.at<double>(1));
+//     }
 
-        _worldPoints = (cv::Mat_<double>(4, 1) << worldPoints[p].x, worldPoints[p].y, worldPoints[p].z, 1.0);
-        _imagePoints = wvec * _worldPoints;
-        imagePoints = (cv::Mat_<double>(3, 1) << _imagePoints.at<double>(0), _imagePoints.at<double>(1), _imagePoints.at<double>(2));
-        _pixelPoints = cameraMatrix * (imagePoints / imagePoints.at<double>(2));
-
-        pixelPoints.emplace_back(_pixelPoints.at<double>(0), _pixelPoints.at<double>(1));
-    }
-
-}
+// }
 
 

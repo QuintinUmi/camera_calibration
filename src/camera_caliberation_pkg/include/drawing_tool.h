@@ -13,7 +13,9 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include "opencv2/opencv.hpp"        
+#include "opencv2/opencv.hpp"   
+#include "apriltag/apriltag.h" 
+#include "opencv2/aruco/charuco.hpp"    
 
 #include <yaml-cpp/yaml.h>
 
@@ -25,51 +27,113 @@
 using namespace std;
 
 
-class Draw3D{
+namespace drt{
 
-    public:
+    class Draw3D{
 
-        Draw3D(float unitLength = 1.0 ,float scaleX = 1.0, float scaleY = 1.0, float scaleZ = 1.0, cv::Mat cameraMatrix = cv::Mat(), cv::Mat disCoffes = cv::Mat());
-        Draw3D(cv::Mat cameraMatrix, cv::Mat disCoffes);
+        public:
+            
+            Draw3D(float unitLength = 1.0 ,float scaleX = 1.0, float scaleY = 1.0, float scaleZ = 1.0, cv::Mat cameraMatrix = cv::Mat(), cv::Mat disCoffes = cv::Mat());
+            Draw3D(cv::Mat cameraMatrix, cv::Mat disCoffes);
 
-        void write_in(cv::Point3f &dst, float x, float y, float z);
-        void write_in(vector<cv::Point3f> &dst, float x, float y, float z);
-
-
-        void set_scale(float scaleX = 1.0, float scaleY = 1.0, float scaleZ = 1.0);
-        void set_unitlen(float unitLength);
-
-        vector<vector<cv::Point3f>> draw_ortho_coordinate_3d(cv::Point3f centerPoint, float density = 0.1);
-        vector<vector<cv::Point3f>> draw_ortho_coordinate_3d(float cx = 0.0, float cy = 0.0, float cz = 0.0, float density = 0.1);
-        void draw_ortho_coordinate_2d(cv::Mat &imgInputOutput, cv::Mat cameraMatrix, cv::Mat disCoffes, cv::Mat rvec, cv::Mat tvec,
-                                        float cx = 0.0, float cy = 0.0, float cz = 0.0);
-
-        void transform_3d_points(vector<cv::Point3f> &srcWorldPoints, vector<cv::Point3f> &newWorldPoints, cv::Mat rvec, cv::Mat tvec);
-        void transform_3d_points(vector<cv::Point3f> &srcWorldPoints, vector<cv::Point3f> &newWorldPoints, 
-                                        float rx, float ry, float rz, float tx, float ty, float tz);
-
-        void mirror_3d_points(vector<cv::Point3f> &srcWorldPoints, vector<cv::Point3f> &newWorldPoints, cv::Point3f surfaceNorVec);
-        void mirror_3d_points(vector<cv::Point3f> &srcWorldPoints, vector<cv::Point3f> &newWorldPoints, float surNorX, float surNorY, float surNorZ);
-
-        void paste_image_perspective_3d(cv::Mat &srcImage, cv::Mat &dstImage, bool remove_background_color, cv::Mat cameraMatrix, cv::Mat disCoffes, cv::Mat rvec, cv::Mat tvec,
-                                cv::Point3f imgOriPoint, cv::Size imgSizeIn3d, cv::Mat offsetRvec = cv::Mat(), cv::Mat offsetTvec = cv::Mat());
+            void write_in(cv::Point3f &dst, float x, float y, float z);
+            void write_in(vector<cv::Point3f> &dst, float x, float y, float z);
 
 
-        cv::Mat cal_2vec_rvec(cv::Point3f vecOri, cv::Point3f vecDst);
+            void set_scale(float scaleX = 1.0, float scaleY = 1.0, float scaleZ = 1.0);
+            void set_unitlen(float unitLength);
 
-    private:
+            vector<vector<cv::Point3f>> draw_ortho_coordinate_3d(cv::Point3f centerPoint, float density = 0.1);
+            vector<vector<cv::Point3f>> draw_ortho_coordinate_3d(float cx = 0.0, float cy = 0.0, float cz = 0.0, float density = 0.1);
+            void draw_ortho_coordinate_2d(cv::Mat &imgInputOutput, cv::Mat cameraMatrix, cv::Mat disCoffes, cv::Mat rvec, cv::Mat tvec,
+                                            float cx = 0.0, float cy = 0.0, float cz = 0.0);
 
-        float unitLength;
-        float scaleX;
-        float scaleY;
-        float scaleZ;
+            void transform_3d_points(vector<cv::Point3f> &srcWorldPoints, vector<cv::Point3f> &newWorldPoints, cv::Mat rvec, cv::Mat tvec);
+            void transform_3d_points(vector<cv::Point3f> &srcWorldPoints, vector<cv::Point3f> &newWorldPoints, 
+                                            float rx, float ry, float rz, float tx, float ty, float tz);
 
-        cv::Mat scaleMatrix = (cv::Mat_<float>(3, 3) << 1.0, 0.0, 0.0,
-                                                        0.0, 1.0, 0.0,
-                                                        0.0, 0.0, 1.0);
+            void mirror_3d_points(vector<cv::Point3f> &srcWorldPoints, vector<cv::Point3f> &newWorldPoints, cv::Point3f surfaceNorVec);
+            void mirror_3d_points(vector<cv::Point3f> &srcWorldPoints, vector<cv::Point3f> &newWorldPoints, float surNorX, float surNorY, float surNorZ);
 
-        cv::Mat cameraMatrix;
-        cv::Mat disCoffes;
-};
+            void setparam_image_perspective_3d(cv::Mat cameraMatrix, cv::Mat disCoffes, cv::Mat rvec, cv::Mat tvec,
+                                    cv::Point3f imgOriPoint, cv::Size imgSizeIn3d, cv::Mat offsetRvec = cv::Mat(), cv::Mat offsetTvec = cv::Mat());
+            void paste_image_perspective_3d(cv::Mat &srcImage, cv::Mat &dstImage, bool remove_background_color);
+            void paste_image_perspective_3d(cv::Mat &srcImage, cv::Mat &dstImage, bool remove_background_color, cv::Mat cameraMatrix, cv::Mat disCoffes, cv::Mat rvec, cv::Mat tvec,
+                                    cv::Point3f imgOriPoint, cv::Size imgSizeIn3d, cv::Mat offsetRvec = cv::Mat(), cv::Mat offsetTvec = cv::Mat());
+
+            void center_image_scale(cv::Mat &srcImage, cv::Mat &dstImage);
+            void center_image_scale(cv::Mat &srcImage, cv::Mat &dstImage, float scaleX, float scaleY, int flags = 1, int borderMode = 0, const cv::Scalar &borderValue = cv::Scalar());
+
+
+
+            // cv::Mat cal_2vec_rvec(cv::Point3f vecOri, cv::Point3f vecDst);
+
+        private:
+
+            float unitLength;
+            float scaleX;
+            float scaleY;
+            float scaleZ;
+
+            cv::Mat scaleMatrix = (cv::Mat_<float>(3, 3) << 1.0, 0.0, 0.0,
+                                                            0.0, 1.0, 0.0,
+                                                            0.0, 0.0, 1.0);
+
+            cv::Mat cameraMatrix;
+            cv::Mat disCoffes;
+
+
+            cv::Mat setCameraMatrix;
+            cv::Mat setDisCoffes;
+            cv::Mat setRvec;
+            cv::Mat setTvec;                             
+            cv::Point3f setImgOriPoint;
+            cv::Size setImgSizeIn3d;
+            cv::Mat setOffsetRvec = cv::Mat();
+            cv::Mat setOffsetTvec = cv::Mat();
+    };
+
+
+    class ArucoM{
+
+        public:
+
+            ArucoM();
+            ArucoM(int dictionaryName, vector<int> selectedIds, vector<float> markerRealLength = vector<float>{1.0});
+            ArucoM(cv::Ptr<cv::aruco::Dictionary> markerDictionary, vector<int> selectedIds, vector<float> markerRealLength = vector<float>{1.0});
+            
+            void set_aruco(int dictionaryName, vector<int> selectedIds, vector<float> markerRealLength = vector<float>{1.0});
+            void set_aruco(cv::Ptr<cv::aruco::Dictionary> markerDictionary, vector<int> selectedIds, vector<float> markerRealLength = vector<float>{1.0});
+            void sel_aruco_ids(vector<int> selectedIds);
+            void set_aruco_real_length(vector<float> markerRealLength);
+            void set_camera_intrinsics(cv::Mat cameraMatrix, cv::Mat disCoffes);
+
+            vector<cv::Mat> generate_aruco_marker(int markerSize);
+            vector<cv::Mat> generate_aruco_marker(int dictionaryName, vector<int> selectedIds, int markerSize);
+            void generate_aruco_inner(int markerSize);
+            void generate_aruco_inner(int dictionaryName, vector<int> selectedIds, int markerSize);
+
+            void detect_aruco(cv::Mat &inputImage, cv::OutputArrayOfArrays  markerCorners, cv::OutputArray markerIds);
+
+            void ext_calib_single_aruco(cv::Mat &inputImage, int targetId, 
+                                        cv::Mat rvecs, cv::Mat tvecs);
+
+            void aruco_marker_save(cv::String imageSavePath, cv::String imageFormat, vector<cv::Mat> arucoMarkerImages, int dictionaryName, bool showImage);
+
+        private:
+ 
+	        cv::Ptr<cv::aruco::Dictionary> markerDictionary;
+            vector<int> selectedIds;
+            cv::Ptr<cv::aruco::DetectorParameters> dParameters;
+            vector<cv::Mat> markerImage;
+
+            vector<float> markerRealLength;
+
+            cv::Mat cameraMatrix;
+            cv::Mat disCoffes;
+
+    };
+
+}
 
 #endif

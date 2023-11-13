@@ -10,7 +10,9 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include "opencv2/opencv.hpp"        
+#include "opencv2/opencv.hpp"  
+#include "apriltag/apriltag.h"      
+#include <aruco/aruco.h>  
 
 #include <yaml-cpp/yaml.h>
 
@@ -23,7 +25,7 @@
 #define PI 3.14159265358979324
 
 using namespace std;
-
+using namespace drt;
 
 
 // Draw3D::Draw3D(){
@@ -222,6 +224,68 @@ void Draw3D::mirror_3d_points(vector<cv::Point3f> &srcWorldPoints, vector<cv::Po
 }
 
 
+
+
+void Draw3D::setparam_image_perspective_3d(cv::Mat cameraMatrix, cv::Mat disCoffes, cv::Mat rvec, cv::Mat tvec,
+                        cv::Point3f imgOriPoint, cv::Size imgSizeIn3d, cv::Mat offsetRvec, cv::Mat offsetTvec)
+{
+    this->setCameraMatrix = setCameraMatrix;
+    this->setDisCoffes = setDisCoffes;
+    this->setRvec = setRvec;
+    this->setTvec = setTvec;                             
+    this->setImgOriPoint = setImgOriPoint;
+    this->setImgSizeIn3d = setImgSizeIn3d;
+    this->setOffsetRvec = setOffsetRvec;
+    this->setOffsetTvec = setOffsetTvec;
+}
+void Draw3D::paste_image_perspective_3d(cv::Mat &srcImage, cv::Mat &dstImage, bool remove_background_color)
+{
+    cv::Mat cameraMatrix = this->setCameraMatrix;
+    cv::Mat disCoffes = this->setDisCoffes;
+    cv::Mat rvec = this->setRvec;
+    cv::Mat tvec = this->setTvec;                             
+    cv::Point3f imgOriPoint = this->setImgOriPoint;
+    cv::Size imgSizeIn3d = this->setImgSizeIn3d;
+    cv::Mat offsetRvec = this->setOffsetRvec;
+    cv::Mat offsetTvec = this->setOffsetTvec;
+
+    vector<cv::Point3f> srcImagePoints3D;
+    this->write_in(srcImagePoints3D, imgOriPoint.x, imgOriPoint.y, imgOriPoint.z);
+    this->write_in(srcImagePoints3D, imgOriPoint.x + imgSizeIn3d.width, imgOriPoint.y, imgOriPoint.z);
+    this->write_in(srcImagePoints3D, imgOriPoint.x, imgOriPoint.y + imgSizeIn3d.height, imgOriPoint.z);
+    this->write_in(srcImagePoints3D, imgOriPoint.x + imgSizeIn3d.width, imgOriPoint.y + imgSizeIn3d.height, imgOriPoint.z);
+
+    cv::resize(srcImage, srcImage, cv::Size(srcImage.size().width, srcImage.size().width * (imgSizeIn3d.height / imgSizeIn3d.width)));
+    
+    if(!(offsetRvec.empty() && offsetTvec.empty()))
+    {
+        this->transform_3d_points(srcImagePoints3D, srcImagePoints3D, offsetRvec, offsetTvec);
+    }
+
+    vector<cv::Point2f> dstImagePoints2D;
+    cv::projectPoints(srcImagePoints3D, rvec, tvec, cameraMatrix, disCoffes, dstImagePoints2D);
+
+    vector<cv::Point2f> srcImagePoints2D = {cv::Point2f(0, 0), cv::Point2f(0, srcImage.cols),
+                                            cv::Point2f(srcImage.rows, 0), cv::Point2f(srcImage.rows, srcImage.cols)};
+
+    cv::Mat warpM = cv::getPerspectiveTransform(srcImagePoints2D, dstImagePoints2D);
+    cv::Mat _dstImage;
+    cv::warpPerspective(srcImage, _dstImage, warpM, dstImage.size());
+    
+    if(remove_background_color)
+    {
+        // cv::fillConvexPoly(dstImage, dstImagePoints2D, cv::Scalar(0, 0, 0));
+        cv::Point mask[] = {    dstImagePoints2D[0],
+                                dstImagePoints2D[1],
+                                dstImagePoints2D[3],
+                                dstImagePoints2D[2]};
+        // std::cout << dstImage.empty() << std::endl;
+        cv::fillConvexPoly(dstImage, mask, 4, cv::Scalar(0, 0, 0));
+    }
+    
+    dstImage = dstImage + _dstImage;
+    
+}
 void Draw3D::paste_image_perspective_3d(cv::Mat &srcImage, cv::Mat &dstImage, bool remove_background_color,
                                     cv::Mat cameraMatrix, cv::Mat disCoffes, cv::Mat rvec, cv::Mat tvec,
                                     cv::Point3f imgOriPoint, cv::Size imgSizeIn3d, cv::Mat offsetRvec, cv::Mat offsetTvec)
@@ -256,12 +320,53 @@ void Draw3D::paste_image_perspective_3d(cv::Mat &srcImage, cv::Mat &dstImage, bo
                                 dstImagePoints2D[1],
                                 dstImagePoints2D[3],
                                 dstImagePoints2D[2]};
-        std::cout << dstImage.empty() << std::endl;
+        // std::cout << dstImage.empty() << std::endl;
         cv::fillConvexPoly(dstImage, mask, 4, cv::Scalar(0, 0, 0));
     }
     
     dstImage = dstImage + _dstImage;
     
+}   
+
+void Draw3D::center_image_scale(cv::Mat &srcImage, cv::Mat &dstImage)
+{
+    float srcH = srcImage.size().height, srcW = srcImage.size().width;
+    float cX = srcW / 2;
+    float cY = srcH / 2;
+    float scaleX = this->scaleX;
+    float scaleY = this->scaleY;
+
+    cv::Point2f srcP[] = {  cv::Point2f(srcW, 0), 
+                            cv::Point2f(srcW ,srcH), 
+                            cv::Point2f(0 ,srcH)
+                         };
+
+    cv::Point2f dstP[] = {  cv::Point2f((srcW - cX) * scaleX + cX, (0 - cY) * scaleY + cY), 
+                            cv::Point2f((srcW - cX) * scaleX + cX, (srcH - cY) * scaleY + cY), 
+                            cv::Point2f((0 - cX) * scaleX + cX, (srcH - cY) * scaleY + cY)
+                         };
+
+    cv::Mat warpM = cv::getAffineTransform(srcP, dstP);
+    cv::warpAffine(srcImage, dstImage, warpM, srcImage.size());
+}
+void Draw3D::center_image_scale(cv::Mat &srcImage, cv::Mat &dstImage, float scaleX, float scaleY, int flags, int borderMode, const cv::Scalar &borderValue)
+{
+    float srcH = srcImage.size().height, srcW = srcImage.size().width;
+    float cX = srcW / 2;
+    float cY = srcH / 2;
+
+    cv::Point2f srcP[] = {  cv::Point2f(srcW, 0), 
+                            cv::Point2f(srcW ,srcH), 
+                            cv::Point2f(0 ,srcH)
+                         };
+
+    cv::Point2f dstP[] = {  cv::Point2f((srcW - cX) * scaleX + cX, (0 - cY) * scaleY + cY), 
+                            cv::Point2f((srcW - cX) * scaleX + cX, (srcH - cY) * scaleY + cY), 
+                            cv::Point2f((0 - cX) * scaleX + cX, (srcH - cY) * scaleY + cY)
+                         };
+
+    cv::Mat warpM = cv::getAffineTransform(srcP, dstP);
+    cv::warpAffine(srcImage, dstImage, warpM, srcImage.size(), flags, borderMode, borderValue);
 }
 
 // cv::Mat Draw3D::cal_2vec_rvec(cv::Point3f vecOri, cv::Point3f vecDst)

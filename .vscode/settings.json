@@ -85,6 +85,11 @@
         "core": "cpp",
         "dense": "cpp",
         "random": "cpp",
-        "*.ipp": "cpp"
-    }
+        "*.ipp": "cpp",
+        "strstream": "cpp",
+        "cwctype": "cpp",
+        "iomanip": "cpp",
+        "typeindex": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "enabled"
 }

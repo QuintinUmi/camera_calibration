@@ -19,6 +19,8 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(Eigen3 REQUIRED)
 find_package(OpenCV 4 REQUIRED)
 find_package(yaml-cpp REQUIRED)
+find_package(aruco REQUIRED)
+find_package(apriltag REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -127,6 +129,7 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
   ./include/
+  /usr/local/include/
 )
 
 ## Declare a C++ library
@@ -143,6 +146,7 @@ add_library(undistortion_lib
 add_library(drawing_tool_lib
   include include/drawing_tool.h
   lib/drawing_tool.cpp
+  lib/aruco_tool.cpp
 )
 
 add_dependencies(camera_caliberation_lib ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
@@ -172,7 +176,8 @@ add_executable(opencv_undistortion_time_cost_test src/opencv_undistortion_time_c
 add_executable(undistortion_sample src/undistortion_sample.cpp)
 add_executable(show_distorted_grid_pattern src/show_distorted_grid_pattern.cpp)
 add_executable(chessboard_cam_ext_caliberation src/chessboard_cam_ext_caliberation.cpp)
-
+add_executable(aruco_marker_generate src/aruco_marker_generate.cpp)
+add_executable(aruco_ext_calib src/aruco_ext_calib.cpp)
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
@@ -224,6 +229,23 @@ target_link_libraries(chessboard_cam_ext_caliberation
   yaml-cpp
 )
 
+target_link_libraries(aruco_marker_generate
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+  camera_caliberation_lib
+  drawing_tool_lib
+  undistortion_lib
+  yaml-cpp
+)
+
+target_link_libraries(aruco_ext_calib
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+  camera_caliberation_lib
+  drawing_tool_lib
+  undistortion_lib
+  yaml-cpp
+)
 #############
 ## Install ##
 #############
