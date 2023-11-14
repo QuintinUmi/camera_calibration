@@ -109,6 +109,8 @@ namespace cct{
 
     };
 
+    vector<cv::String> get_images_from_path(string path, string image_format);
+    
 }
 
 #endif

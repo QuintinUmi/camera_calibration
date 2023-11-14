@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
     camCal.get_images_from_path(imagePath, imageFormat);
     CamCalExt Cce(newCameraMatrix, newDisCoffes);
     Draw3D d3d(28.9, 1, 1, 1);
-    cv::Mat testImg = cv::imread("/home/quintinumi/test.jpeg"), testImgOp;
+    cv::Mat testImg = cv::imread("/home/quintinumi/test.png"), testImgOp;
     d3d.center_image_scale(testImg, testImg, 1, -1);
     // CamCalExt Cce(cameraMatrix, disCoffes);
     // vector<vector<cv::Point3f>> wp = d3d.draw_ortho_coordinate_3d();
@@ -183,9 +183,9 @@ int main(int argc, char *argv[])
         //                                 newCameraMatrix, cv::Mat(), ext[0], ext[1], 
         //                                 cv::Point3f(28.9, 28.9, 28.9), cv::Size(28.9 * 5, 28.9 * 5), 
         //                                 (cv::Mat_<float>(3, 1) << 0, 0, -PI), (cv::Mat_<float>(3, 1) << 28.9 * 3, 28.9 * 3, 0));
-        d3d.paste_image_perspective_3d(testImg, undistortedImage, true,
+        d3d.paste_image_perspective_3d(testImg, undistortedImage, true, false,
                                         newCameraMatrix, cv::Mat(), ext[0], ext[1], 
-                                        cv::Point3f(28.9, 28.9, -28.9), cv::Size(28.9 * 5, 28.9 * 5), 
+                                        cv::Point3f(-28.9, -28.9, 0), cv::Size(28.9 * 10, 28.9 * 10), 
                                         (cv::Mat_<float>(3, 1) << 0, 0, 0), (cv::Mat_<float>(3, 1) << 0, 0, 0));
 
         

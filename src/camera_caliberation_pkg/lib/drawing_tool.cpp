@@ -39,14 +39,14 @@ Draw3D::Draw3D(float unitLength ,float scaleX, float scaleY, float scaleZ, cv::M
     this->scaleX = scaleX;
     this->scaleY = scaleY;
     this->scaleZ = scaleZ;
-    this->cameraMatrix = cameraMatrix;
-    this->disCoffes = disCoffes;
+    this->setCameraMatrix = cameraMatrix;
+    this->setDisCoffes = disCoffes;
 
 }
 Draw3D::Draw3D(cv::Mat cameraMatrix, cv::Mat disCoffes)
 {
-    this->cameraMatrix = cameraMatrix;
-    this->disCoffes = disCoffes;
+    this->setCameraMatrix = cameraMatrix;
+    this->setDisCoffes = disCoffes;
 }
 
 void Draw3D::set_unitlen(float unitLength){
@@ -226,37 +226,39 @@ void Draw3D::mirror_3d_points(vector<cv::Point3f> &srcWorldPoints, vector<cv::Po
 
 
 
-void Draw3D::setparam_image_perspective_3d(cv::Mat cameraMatrix, cv::Mat disCoffes, cv::Mat rvec, cv::Mat tvec,
+void Draw3D::setparam_image_perspective_3d(cv::Mat cameraMatrix, cv::Mat disCoffes,
                         cv::Point3f imgOriPoint, cv::Size imgSizeIn3d, cv::Mat offsetRvec, cv::Mat offsetTvec)
 {
-    this->setCameraMatrix = setCameraMatrix;
-    this->setDisCoffes = setDisCoffes;
-    this->setRvec = setRvec;
-    this->setTvec = setTvec;                             
-    this->setImgOriPoint = setImgOriPoint;
-    this->setImgSizeIn3d = setImgSizeIn3d;
-    this->setOffsetRvec = setOffsetRvec;
-    this->setOffsetTvec = setOffsetTvec;
+    this->setCameraMatrix = cameraMatrix;
+    this->setDisCoffes = disCoffes;                          
+    this->setImgOriPoint = imgOriPoint;
+    this->setImgSizeIn3d = imgSizeIn3d;
+    this->setOffsetRvec = offsetRvec;
+    this->setOffsetTvec = offsetTvec;
 }
-void Draw3D::paste_image_perspective_3d(cv::Mat &srcImage, cv::Mat &dstImage, bool remove_background_color)
+void Draw3D::paste_image_perspective_3d(cv::Mat &srcImage, cv::Mat &dstImage, bool remove_background_color, bool center_image_axis, cv::Mat rvec, cv::Mat tvec)
 {
     cv::Mat cameraMatrix = this->setCameraMatrix;
-    cv::Mat disCoffes = this->setDisCoffes;
-    cv::Mat rvec = this->setRvec;
-    cv::Mat tvec = this->setTvec;                             
+    cv::Mat disCoffes = this->setDisCoffes;                            
     cv::Point3f imgOriPoint = this->setImgOriPoint;
     cv::Size imgSizeIn3d = this->setImgSizeIn3d;
     cv::Mat offsetRvec = this->setOffsetRvec;
     cv::Mat offsetTvec = this->setOffsetTvec;
 
+    if(center_image_axis)
+    {
+        imgOriPoint.x = imgOriPoint.x - imgSizeIn3d.width / 2;
+        imgOriPoint.y = imgOriPoint.y - imgSizeIn3d.height / 2;
+    }
+    
     vector<cv::Point3f> srcImagePoints3D;
     this->write_in(srcImagePoints3D, imgOriPoint.x, imgOriPoint.y, imgOriPoint.z);
     this->write_in(srcImagePoints3D, imgOriPoint.x + imgSizeIn3d.width, imgOriPoint.y, imgOriPoint.z);
     this->write_in(srcImagePoints3D, imgOriPoint.x, imgOriPoint.y + imgSizeIn3d.height, imgOriPoint.z);
     this->write_in(srcImagePoints3D, imgOriPoint.x + imgSizeIn3d.width, imgOriPoint.y + imgSizeIn3d.height, imgOriPoint.z);
-
-    cv::resize(srcImage, srcImage, cv::Size(srcImage.size().width, srcImage.size().width * (imgSizeIn3d.height / imgSizeIn3d.width)));
     
+    cv::resize(srcImage, srcImage, cv::Size(srcImage.size().width, srcImage.size().width * (imgSizeIn3d.height / imgSizeIn3d.width)));
+    // printf("test------------------------------------\n");
     if(!(offsetRvec.empty() && offsetTvec.empty()))
     {
         this->transform_3d_points(srcImagePoints3D, srcImagePoints3D, offsetRvec, offsetTvec);
@@ -284,12 +286,77 @@ void Draw3D::paste_image_perspective_3d(cv::Mat &srcImage, cv::Mat &dstImage, bo
     }
     
     dstImage = dstImage + _dstImage;
+}
+void Draw3D::paste_image_perspective_3d(cv::Mat &srcImage, cv::Mat &dstImage, bool remove_background_color, bool center_image_axis, vector<cv::Mat> rvecs, vector<cv::Mat> tvecs)
+{
+    if(rvecs.size() != tvecs.size())
+    {
+        printf("Sizes of rvecs and tvecs are not equal!\n");
+        return;
+    }
+    cv::Mat cameraMatrix = this->setCameraMatrix;
+    cv::Mat disCoffes = this->setDisCoffes;                            
+    cv::Point3f imgOriPoint = this->setImgOriPoint;
+    cv::Size imgSizeIn3d = this->setImgSizeIn3d;
+    cv::Mat offsetRvec = this->setOffsetRvec;
+    cv::Mat offsetTvec = this->setOffsetTvec;
+
+    if(center_image_axis)
+    {
+        imgOriPoint.x = imgOriPoint.x - imgSizeIn3d.width / 2;
+        imgOriPoint.y = imgOriPoint.y - imgSizeIn3d.height / 2;
+    }
+    
+    vector<cv::Point3f> srcImagePoints3D;
+    this->write_in(srcImagePoints3D, imgOriPoint.x, imgOriPoint.y, imgOriPoint.z);
+    this->write_in(srcImagePoints3D, imgOriPoint.x + imgSizeIn3d.width, imgOriPoint.y, imgOriPoint.z);
+    this->write_in(srcImagePoints3D, imgOriPoint.x, imgOriPoint.y + imgSizeIn3d.height, imgOriPoint.z);
+    this->write_in(srcImagePoints3D, imgOriPoint.x + imgSizeIn3d.width, imgOriPoint.y + imgSizeIn3d.height, imgOriPoint.z);
+    
+    cv::resize(srcImage, srcImage, cv::Size(srcImage.size().width, srcImage.size().width * (imgSizeIn3d.height / imgSizeIn3d.width)));
+    // printf("test------------------------------------\n");
+    if(!(offsetRvec.empty() && offsetTvec.empty()))
+    {
+        this->transform_3d_points(srcImagePoints3D, srcImagePoints3D, offsetRvec, offsetTvec);
+    }
+
+    vector<cv::Point2f> dstImagePoints2D;
+    vector<cv::Point2f> srcImagePoints2D = {cv::Point2f(0, 0), cv::Point2f(0, srcImage.cols),
+                                            cv::Point2f(srcImage.rows, 0), cv::Point2f(srcImage.rows, srcImage.cols)};
+    cv::Mat warpM, _dstImage;
+    for(int i = 0; i < rvecs.size(); i++)
+    {
+        cv::projectPoints(srcImagePoints3D, rvecs[i], tvecs[i], cameraMatrix, disCoffes, dstImagePoints2D);
+
+        warpM = cv::getPerspectiveTransform(srcImagePoints2D, dstImagePoints2D);
+        cv::Mat _dstImage;
+        cv::warpPerspective(srcImage, _dstImage, warpM, dstImage.size());
+        
+        if(remove_background_color)
+        {
+            // cv::fillConvexPoly(dstImage, dstImagePoints2D, cv::Scalar(0, 0, 0));
+            cv::Point mask[] = {    dstImagePoints2D[0],
+                                    dstImagePoints2D[1],
+                                    dstImagePoints2D[3],
+                                    dstImagePoints2D[2]};
+            // std::cout << dstImage.empty() << std::endl;
+            cv::fillConvexPoly(dstImage, mask, 4, cv::Scalar(0, 0, 0));
+        }
+        
+        dstImage = dstImage + _dstImage;
+    }
     
 }
-void Draw3D::paste_image_perspective_3d(cv::Mat &srcImage, cv::Mat &dstImage, bool remove_background_color,
+void Draw3D::paste_image_perspective_3d(cv::Mat &srcImage, cv::Mat &dstImage, bool remove_background_color, bool center_image_axis, 
                                     cv::Mat cameraMatrix, cv::Mat disCoffes, cv::Mat rvec, cv::Mat tvec,
                                     cv::Point3f imgOriPoint, cv::Size imgSizeIn3d, cv::Mat offsetRvec, cv::Mat offsetTvec)
 {
+    if(center_image_axis)
+    {
+        imgOriPoint.x = imgOriPoint.x - imgSizeIn3d.width / 2;
+        imgOriPoint.y = imgOriPoint.y - imgSizeIn3d.height / 2;
+    }
+
     vector<cv::Point3f> srcImagePoints3D;
     this->write_in(srcImagePoints3D, imgOriPoint.x, imgOriPoint.y, imgOriPoint.z);
     this->write_in(srcImagePoints3D, imgOriPoint.x + imgSizeIn3d.width, imgOriPoint.y, imgOriPoint.z);

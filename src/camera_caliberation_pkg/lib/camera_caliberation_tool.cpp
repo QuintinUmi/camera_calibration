@@ -303,6 +303,9 @@ void CamCalExt::mapping_3d_to_2d_one_frame(vector<cv::Point3f> &worldPoints, vec
     
 }
 
+
+
+
 // void CamCalExt::mapping_points_3d_to_2d(vector<cv::Point3f> &worldPoints, vector<cv::Point2f> &pixelPoints, cv::Mat rvec, cv::Mat tvec, 
 //                                             cv::Mat cameraMatrix, cv::Mat disCoffes)
 // {   
@@ -342,3 +345,19 @@ void CamCalExt::mapping_3d_to_2d_one_frame(vector<cv::Point3f> &worldPoints, vec
 // }
 
 
+vector<cv::String> cct::get_images_from_path(cv::String path, cv::String image_format)
+{
+    std::cout << "Path: " << path <<std::endl;
+    cv::String searchPath = path + string("*.") + image_format;
+    vector<cv::String> imagePaths;
+    cv::glob(searchPath, imagePaths);
+
+    if(imagePaths.size()){
+        printf("Find %ld images in path: %s\n", imagePaths.size(), searchPath.c_str());
+        return imagePaths;
+    }
+    else{
+        printf("Failed to load images!\n");
+        return vector<cv::String>{};
+    }
+}

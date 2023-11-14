@@ -55,11 +55,14 @@ namespace drt{
             void mirror_3d_points(vector<cv::Point3f> &srcWorldPoints, vector<cv::Point3f> &newWorldPoints, cv::Point3f surfaceNorVec);
             void mirror_3d_points(vector<cv::Point3f> &srcWorldPoints, vector<cv::Point3f> &newWorldPoints, float surNorX, float surNorY, float surNorZ);
 
-            void setparam_image_perspective_3d(cv::Mat cameraMatrix, cv::Mat disCoffes, cv::Mat rvec, cv::Mat tvec,
+            void setparam_image_perspective_3d(cv::Mat cameraMatrix, cv::Mat disCoffes,
                                     cv::Point3f imgOriPoint, cv::Size imgSizeIn3d, cv::Mat offsetRvec = cv::Mat(), cv::Mat offsetTvec = cv::Mat());
-            void paste_image_perspective_3d(cv::Mat &srcImage, cv::Mat &dstImage, bool remove_background_color);
-            void paste_image_perspective_3d(cv::Mat &srcImage, cv::Mat &dstImage, bool remove_background_color, cv::Mat cameraMatrix, cv::Mat disCoffes, cv::Mat rvec, cv::Mat tvec,
-                                    cv::Point3f imgOriPoint, cv::Size imgSizeIn3d, cv::Mat offsetRvec = cv::Mat(), cv::Mat offsetTvec = cv::Mat());
+            void paste_image_perspective_3d(cv::Mat &srcImage, cv::Mat &dstImage, bool remove_background_color, bool center_image_axis, cv::Mat rvec, cv::Mat tvec);
+            void paste_image_perspective_3d(cv::Mat &srcImage, cv::Mat &dstImage, bool remove_background_color, bool center_image_axis, vector<cv::Mat> rvecs, vector<cv::Mat> tvecs);
+            void paste_image_perspective_3d(cv::Mat &srcImage, cv::Mat &dstImage, bool remove_background_color, bool center_image_axis, cv::Mat cameraMatrix, cv::Mat disCoffes, 
+                                            cv::Mat rvec, cv::Mat tvec, cv::Point3f imgOriPoint, cv::Size imgSizeIn3d, cv::Mat offsetRvec = cv::Mat(), cv::Mat offsetTvec = cv::Mat());
+            void paste_image_perspective_3d(cv::Mat &srcImage, cv::Mat &dstImage, bool remove_background_color, bool center_image_axis, cv::Mat cameraMatrix, cv::Mat disCoffes, 
+                                            vector<cv::Mat> rvecs, vector<cv::Mat> tvecs, cv::Point3f imgOriPoint, cv::Size imgSizeIn3d, cv::Mat offsetRvec = cv::Mat(), cv::Mat offsetTvec = cv::Mat());
 
             void center_image_scale(cv::Mat &srcImage, cv::Mat &dstImage);
             void center_image_scale(cv::Mat &srcImage, cv::Mat &dstImage, float scaleX, float scaleY, int flags = 1, int borderMode = 0, const cv::Scalar &borderValue = cv::Scalar());
@@ -79,16 +82,16 @@ namespace drt{
                                                             0.0, 1.0, 0.0,
                                                             0.0, 0.0, 1.0);
 
-            cv::Mat cameraMatrix;
-            cv::Mat disCoffes;
+            // cv::Mat cameraMatrix;
+            // cv::Mat disCoffes;
 
 
             cv::Mat setCameraMatrix;
             cv::Mat setDisCoffes;
             cv::Mat setRvec;
             cv::Mat setTvec;                             
-            cv::Point3f setImgOriPoint;
-            cv::Size setImgSizeIn3d;
+            cv::Point3f setImgOriPoint = cv::Point3f(0.0, 0.0, 0.0);
+            cv::Size setImgSizeIn3d = cv::Size(1.0, 1.0);
             cv::Mat setOffsetRvec = cv::Mat();
             cv::Mat setOffsetTvec = cv::Mat();
     };
@@ -99,8 +102,13 @@ namespace drt{
         public:
 
             ArucoM();
-            ArucoM(int dictionaryName, vector<int> selectedIds, vector<float> markerRealLength = vector<float>{1.0});
-            ArucoM(cv::Ptr<cv::aruco::Dictionary> markerDictionary, vector<int> selectedIds, vector<float> markerRealLength = vector<float>{1.0});
+            ArucoM(int dictionaryName, vector<int> selectedIds, vector<float> markerRealLength = vector<float>{1.0}, cv::Mat cameraMatrix = cv::Mat(), cv::Mat disCoffes = cv::Mat());
+            ArucoM(cv::Ptr<cv::aruco::Dictionary> markerDictionary, vector<int> selectedIds, vector<float> markerRealLength = vector<float>{1.0}, cv::Mat cameraMatrix = cv::Mat(), cv::Mat disCoffes = cv::Mat());
+            ~ArucoM();
+
+            void aruco_hash_init();
+
+            
             
             void set_aruco(int dictionaryName, vector<int> selectedIds, vector<float> markerRealLength = vector<float>{1.0});
             void set_aruco(cv::Ptr<cv::aruco::Dictionary> markerDictionary, vector<int> selectedIds, vector<float> markerRealLength = vector<float>{1.0});
@@ -113,15 +121,17 @@ namespace drt{
             void generate_aruco_inner(int markerSize);
             void generate_aruco_inner(int dictionaryName, vector<int> selectedIds, int markerSize);
 
-            void detect_aruco(cv::Mat &inputImage, cv::OutputArrayOfArrays  markerCorners, cv::OutputArray markerIds);
+            void detect_aruco(cv::Mat &inputImage, cv::OutputArrayOfArrays markerCorners, vector<int> markerIds);
 
-            void ext_calib_single_aruco(cv::Mat &inputImage, int targetId, 
-                                        cv::Mat rvecs, cv::Mat tvecs);
+            void ext_calib_single_arucos(cv::Mat &inputImage, int targetId, 
+                                        vector<cv::Mat> &rvecs, vector<cv::Mat> &tvecs);
 
             void aruco_marker_save(cv::String imageSavePath, cv::String imageFormat, vector<cv::Mat> arucoMarkerImages, int dictionaryName, bool showImage);
 
         private:
- 
+            
+            int *aruco_hash = NULL;
+
 	        cv::Ptr<cv::aruco::Dictionary> markerDictionary;
             vector<int> selectedIds;
             cv::Ptr<cv::aruco::DetectorParameters> dParameters;
