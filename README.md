@@ -13,27 +13,44 @@ eg:
 
 ```
 camera_caliberation_pkg
-        ├── CMakeLists.txt
-        ├── config
-        │   ├── caliberation_param.yaml
-        │   └── setup.yaml
-        ├── include
-        │   ├── camera_caliberation_chessboard.h
-        │   ├── param_code.h
-        │   └── undistortion.h
-        ├── launch
-        │   ├── camera_caliberation.launch
-        │   ├── opencv_undistortion_time_cost_test.launch
-        │   ├── show_distorted_grid_pattern.launch
-        │   └── undistortion.launch
-        ├── lib
-        │   ├── camera_caliberation_chessboard.cpp
-        │   └── undistortion.cpp
-        ├── package.xml
-        └── src
-            ├── camera_caliberation.cpp
-            ├── show_distorted_grid_pattern.cpp
-            └── undistortion_sample.cpp
+    ├── CMakeLists.txt
+    ├── config
+    │   ├── caliberation_param.yaml
+    │   ├── distortion_gridpattern_compare1.png
+    │   ├── distortion_gridpattern_compare2.png
+    │   ├── setup_aruco.yaml
+    │   ├── setup_chessboard.yaml
+    │   └── setup_ros.yaml
+    ├── include
+    │   ├── camera_caliberation_tool.h
+    │   ├── drawing_tool.h
+    │   ├── param_code.h
+    │   └── undistortion.h
+    ├── launch
+    │   ├── aruco_ext_calib.launch
+    │   ├── aruco_marker_generate.launch
+    │   ├── aruco_video_ext_calib.launch
+    │   ├── camera_caliberation.launch
+    │   ├── chessboard_cam_ext_caliberation.launch
+    │   ├── opencv_undistortion_time_cost_test.launch
+    │   ├── show_distorted_grid_pattern.launch
+    │   └── undistortion.launch
+    ├── lib
+    │   ├── aruco_tool.cpp
+    │   ├── camera_caliberation_tool.cpp
+    │   ├── drawing_tool.cpp
+    │   └── undistortion.cpp
+    ├── package.xml
+    └── src
+        ├── aruco_ext_calib.cpp
+        ├── aruco_marker_generate.cpp
+        ├── aruco_video_ext_calib.cpp
+        ├── camera_caliberation.cpp
+        ├── chessboard_cam_ext_caliberation.cpp
+        ├── opencv_undistortion_time_cost_test.cpp
+        ├── show_distorted_grid_pattern.cpp
+        └── undistortion_sample.cpp
+
 ```
 
 <br />
@@ -83,6 +100,16 @@ To use these nodes, please use launch file for transmitting server parameters.
    
 
 4. Remapping by ```cv::remap()``` function.
+
+### Example for Node "aruco_video_ext_calib"
+
+After the camera intrinsics calibrating, real-time external calibration can be performed using an Aruco Marker with known true dimensions. 
+The resulting rotation and translation matrices enable mapping from 3d space to 2d space. 
+A simple function of AR can be realized by inserting objects (pictures, point clouds, etc.) into the 3d space.
+
+<div align=center>
+        <img src="https://github.com/QuintinUmi/camera_caliberation/blob/source/src/image/output1.gif?raw=true" width="400"/><img src="https://github.com/QuintinUmi/camera_caliberation/blob/source/src/image/output3.gif?raw=true" width="400"/>
+</div>
 
 ## Launch File Description
 
