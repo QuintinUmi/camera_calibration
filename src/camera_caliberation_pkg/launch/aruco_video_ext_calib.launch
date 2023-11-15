@@ -1,0 +1,5 @@
+<launch>
+    <rosparam file="$(find camera_caliberation_pkg)/config/setup_aruco.yaml" command="load"/>
+    <rosparam file="$(find camera_caliberation_pkg)/config/setup_ros.yaml" command="load"/>
+    <node pkg="camera_caliberation_pkg" type="aruco_video_ext_calib" name="aruco_video_ext_calib" output="screen"/>
+</launch>

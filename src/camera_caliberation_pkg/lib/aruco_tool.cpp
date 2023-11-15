@@ -11,7 +11,7 @@
 #include <stdlib.h>
 
 #include "opencv2/opencv.hpp"  
-#include "apriltag/apriltag.h"    
+// #include "apriltag/apriltag.h"    
 #include "opencv2/aruco/charuco.hpp"  
   
 
@@ -43,7 +43,6 @@ ArucoM::ArucoM(int dictionaryName, vector<int> selectedIds, vector<float> marker
         this->markerRealLength.emplace_back(markerRealLength[i]);
     }
     this->set_camera_intrinsics(cameraMatrix, disCoffes);
-    this->aruco_hash_init();
 }
 ArucoM::ArucoM(cv::Ptr<cv::aruco::Dictionary> markerDictionary, vector<int> selectedIds, vector<float> markerRealLength, cv::Mat cameraMatrix, cv::Mat disCoffes)
 {
@@ -55,23 +54,28 @@ ArucoM::ArucoM(cv::Ptr<cv::aruco::Dictionary> markerDictionary, vector<int> sele
         this->markerRealLength.emplace_back(markerRealLength[i]);
     }
     this->set_camera_intrinsics(cameraMatrix, disCoffes);
-    this->aruco_hash_init();
 }
 ArucoM::~ArucoM()
 {
-    if(this->aruco_hash){
-        delete []this->aruco_hash;
-        this->aruco_hash = NULL;
-    }
+    // if(this->aruco_hash != NULL){
+    //     int* tmp = this->aruco_hash;
+    //     this->aruco_hash = NULL;
+    //     delete tmp;
+    // }
         
 }
 
+void ArucoM::create()
+{
+    this->aruco_hash_init();
+}
 
 void ArucoM::aruco_hash_init()
 {
-    if(this->aruco_hash){
-        delete []this->aruco_hash;
+    if(this->aruco_hash != NULL){
+        int* tmp = this->aruco_hash;
         this->aruco_hash = NULL;
+        delete tmp;
     }
     int hashSize = 0;
     for(int i = 0; i < this->selectedIds.size(); i++)
@@ -84,6 +88,15 @@ void ArucoM::aruco_hash_init()
         this->aruco_hash[selectedIds[i]] = i;
     }
     printf("Aruco Hash Init Success!\n");
+}
+
+void ArucoM::release()
+{
+    if(this->aruco_hash != NULL){
+        int* tmp = this->aruco_hash;
+        this->aruco_hash = NULL;
+        delete tmp;
+    }
 }
 
 
@@ -211,7 +224,8 @@ void ArucoM::ext_calib_single_arucos(cv::Mat &inputImage, int targetId,
     if(!selectedCorners.empty())
     {
         // std::cout << this->cameraMatrix << std::endl;
-        cv::aruco::estimatePoseSingleMarkers(selectedCorners, this->markerRealLength[indexId], this->cameraMatrix, this->disCoffes, rvecs3d, tvecs3d);
+        std::cout << markerIds[indexId] << std::endl;
+        cv::aruco::estimatePoseSingleMarkers(selectedCorners, this->markerRealLength[this->aruco_hash[targetId]], this->cameraMatrix, this->disCoffes, rvecs3d, tvecs3d);
         int vecSize = selectedCorners.size();
         for(int j = 0; j < vecSize; j++)
         {
@@ -224,6 +238,52 @@ void ArucoM::ext_calib_single_arucos(cv::Mat &inputImage, int targetId,
         rvecs = vector<cv::Mat>{};
         tvecs = vector<cv::Mat>{};
     }
+    
+}
+
+void ArucoM::ext_calib_multipul_arucos(cv::Mat &inputImage, vector<int> selectedId, 
+                                vector<vector<cv::Mat>> &rvecs, vector<vector<cv::Mat>> &tvecs, vector<int> detectedIds)
+{
+    // vector<vector<cv::Point2f>> markerCorners, selectedCorners;
+    // vector<int> markerIds;
+    // int indexId;
+    // vector<cv::Vec3d> rvecs3d, tvecs3d;
+    // cv::Mat vecData;
+    
+    // cv::aruco::detectMarkers(inputImage, this->markerDictionary, markerCorners, markerIds, this->dParameters);
+    // if(markerIds.empty())
+    // {
+    //     printf("No marker detected!\n");
+    //     return;
+    // }
+    // for(indexId = 0; indexId < markerIds.size(); indexId++){
+    //     printf("Marker %d check!\n", markerIds[indexId]);
+    //     for(int j = 0; j < selectedId.size(); j++)
+    //     {
+    //         if(markerIds[indexId] == selectedId[j])
+    //         {
+    //             selectedCorners.emplace_back(markerCorners[indexId]);
+    //             break;
+    //         }               
+    //     }
+        
+    // }
+    // if(!selectedCorners.empty())
+    // {
+    //     // std::cout << this->cameraMatrix << std::endl;
+    //     cv::aruco::estimatePoseSingleMarkers(selectedCorners, this->markerRealLength[indexId], this->cameraMatrix, this->disCoffes, rvecs3d, tvecs3d);
+    //     int vecSize = selectedCorners.size();
+    //     for(int j = 0; j < vecSize; j++)
+    //     {
+    //         rvecs.emplace_back((cv::Mat_<float>(3, 1) << rvecs3d[j][0], rvecs3d[j][1], rvecs3d[j][2]));
+    //         tvecs.emplace_back((cv::Mat_<float>(3, 1) << tvecs3d[j][0], tvecs3d[j][1], tvecs3d[j][2]));
+    //     }
+    // }
+    // else
+    // {
+    //     rvecs = vector<vector<cv::Mat>>{};
+    //     tvecs = vector<vector<cv::Mat>>{};
+    // }
     
 }
 
