@@ -17,6 +17,7 @@
               "/usr/include/**",
               "/usr/include/**",
               "/usr/local/include/**",
+              "/usr/local/include/aruco/**",
               "/home/quintinumi/project/ws_camera_caliberation/src/camera_caliberation/src/camera_caliberation_pkg/include/**"
           ],
           "name": "ROS",
