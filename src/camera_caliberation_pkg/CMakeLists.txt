@@ -20,7 +20,7 @@ find_package(Eigen3 REQUIRED)
 find_package(OpenCV 4 REQUIRED)
 find_package(yaml-cpp REQUIRED)
 find_package(aruco REQUIRED)
-find_package(apriltag REQUIRED)
+# find_package(apriltag REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -178,6 +178,7 @@ add_executable(show_distorted_grid_pattern src/show_distorted_grid_pattern.cpp)
 add_executable(chessboard_cam_ext_caliberation src/chessboard_cam_ext_caliberation.cpp)
 add_executable(aruco_marker_generate src/aruco_marker_generate.cpp)
 add_executable(aruco_ext_calib src/aruco_ext_calib.cpp)
+add_executable(aruco_video_ext_calib src/aruco_video_ext_calib.cpp)
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
@@ -239,6 +240,15 @@ target_link_libraries(aruco_marker_generate
 )
 
 target_link_libraries(aruco_ext_calib
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+  camera_caliberation_lib
+  drawing_tool_lib
+  undistortion_lib
+  yaml-cpp
+)
+
+target_link_libraries(aruco_video_ext_calib
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
   camera_caliberation_lib

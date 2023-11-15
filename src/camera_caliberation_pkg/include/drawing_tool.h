@@ -14,7 +14,7 @@
 #include <stdlib.h>
 
 #include "opencv2/opencv.hpp"   
-#include "apriltag/apriltag.h" 
+// #include "apriltag/apriltag.h" 
 #include "opencv2/aruco/charuco.hpp"    
 
 #include <yaml-cpp/yaml.h>
@@ -106,10 +106,11 @@ namespace drt{
             ArucoM(cv::Ptr<cv::aruco::Dictionary> markerDictionary, vector<int> selectedIds, vector<float> markerRealLength = vector<float>{1.0}, cv::Mat cameraMatrix = cv::Mat(), cv::Mat disCoffes = cv::Mat());
             ~ArucoM();
 
+            void create();
             void aruco_hash_init();
+            void release();
 
-            
-            
+               
             void set_aruco(int dictionaryName, vector<int> selectedIds, vector<float> markerRealLength = vector<float>{1.0});
             void set_aruco(cv::Ptr<cv::aruco::Dictionary> markerDictionary, vector<int> selectedIds, vector<float> markerRealLength = vector<float>{1.0});
             void sel_aruco_ids(vector<int> selectedIds);
@@ -125,6 +126,9 @@ namespace drt{
 
             void ext_calib_single_arucos(cv::Mat &inputImage, int targetId, 
                                         vector<cv::Mat> &rvecs, vector<cv::Mat> &tvecs);
+            
+            void ext_calib_multipul_arucos(cv::Mat &inputImage, vector<int> targetId, 
+                                                    vector<vector<cv::Mat>> &rvecs, vector<vector<cv::Mat>> &tvecs, vector<int> detectedIds);
 
             void aruco_marker_save(cv::String imageSavePath, cv::String imageFormat, vector<cv::Mat> arucoMarkerImages, int dictionaryName, bool showImage);
 

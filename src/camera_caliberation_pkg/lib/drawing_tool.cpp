@@ -11,7 +11,7 @@
 #include <stdlib.h>
 
 #include "opencv2/opencv.hpp"  
-#include "apriltag/apriltag.h"      
+// #include "apriltag/apriltag.h"      
 #include <aruco/aruco.h>  
 
 #include <yaml-cpp/yaml.h>
@@ -236,7 +236,7 @@ void Draw3D::setparam_image_perspective_3d(cv::Mat cameraMatrix, cv::Mat disCoff
     this->setOffsetRvec = offsetRvec;
     this->setOffsetTvec = offsetTvec;
 }
-void Draw3D::paste_image_perspective_3d(cv::Mat &srcImage, cv::Mat &dstImage, bool remove_background_color, bool center_image_axis, cv::Mat rvec, cv::Mat tvec)
+void Draw3D::paste_image_perspective_3d(cv::Mat &srcImageToPaste, cv::Mat &dstImagePasteOn, bool remove_background_color, bool center_image_axis, cv::Mat rvec, cv::Mat tvec)
 {
     cv::Mat cameraMatrix = this->setCameraMatrix;
     cv::Mat disCoffes = this->setDisCoffes;                            
@@ -257,7 +257,8 @@ void Draw3D::paste_image_perspective_3d(cv::Mat &srcImage, cv::Mat &dstImage, bo
     this->write_in(srcImagePoints3D, imgOriPoint.x, imgOriPoint.y + imgSizeIn3d.height, imgOriPoint.z);
     this->write_in(srcImagePoints3D, imgOriPoint.x + imgSizeIn3d.width, imgOriPoint.y + imgSizeIn3d.height, imgOriPoint.z);
     
-    cv::resize(srcImage, srcImage, cv::Size(srcImage.size().width, srcImage.size().width * (imgSizeIn3d.height / imgSizeIn3d.width)));
+    cv::Mat srcImage;
+    cv::resize(srcImageToPaste, srcImage, cv::Size(srcImageToPaste.size().width, srcImageToPaste.size().width * (imgSizeIn3d.height / imgSizeIn3d.width)));
     // printf("test------------------------------------\n");
     if(!(offsetRvec.empty() && offsetTvec.empty()))
     {
@@ -272,7 +273,7 @@ void Draw3D::paste_image_perspective_3d(cv::Mat &srcImage, cv::Mat &dstImage, bo
 
     cv::Mat warpM = cv::getPerspectiveTransform(srcImagePoints2D, dstImagePoints2D);
     cv::Mat _dstImage;
-    cv::warpPerspective(srcImage, _dstImage, warpM, dstImage.size());
+    cv::warpPerspective(srcImage, _dstImage, warpM, dstImagePasteOn.size());
     
     if(remove_background_color)
     {
@@ -282,18 +283,23 @@ void Draw3D::paste_image_perspective_3d(cv::Mat &srcImage, cv::Mat &dstImage, bo
                                 dstImagePoints2D[3],
                                 dstImagePoints2D[2]};
         // std::cout << dstImage.empty() << std::endl;
-        cv::fillConvexPoly(dstImage, mask, 4, cv::Scalar(0, 0, 0));
+        cv::fillConvexPoly(dstImagePasteOn, mask, 4, cv::Scalar(0, 0, 0));
     }
     
-    dstImage = dstImage + _dstImage;
+    dstImagePasteOn = dstImagePasteOn + _dstImage;
 }
-void Draw3D::paste_image_perspective_3d(cv::Mat &srcImage, cv::Mat &dstImage, bool remove_background_color, bool center_image_axis, vector<cv::Mat> rvecs, vector<cv::Mat> tvecs)
+void Draw3D::paste_image_perspective_3d(cv::Mat &srcImageToPaste, cv::Mat &dstImagePasteOn, bool remove_background_color, bool center_image_axis, vector<cv::Mat> rvecs, vector<cv::Mat> tvecs)
 {
     if(rvecs.size() != tvecs.size())
     {
         printf("Sizes of rvecs and tvecs are not equal!\n");
         return;
     }
+    // if(rvecs.empty() || tvecs.empty())
+    // {
+    //     printf("No rvecs or tvecs data. Perspective Failed!"\n);
+    //     return;
+    // }
     cv::Mat cameraMatrix = this->setCameraMatrix;
     cv::Mat disCoffes = this->setDisCoffes;                            
     cv::Point3f imgOriPoint = this->setImgOriPoint;
@@ -313,7 +319,10 @@ void Draw3D::paste_image_perspective_3d(cv::Mat &srcImage, cv::Mat &dstImage, bo
     this->write_in(srcImagePoints3D, imgOriPoint.x, imgOriPoint.y + imgSizeIn3d.height, imgOriPoint.z);
     this->write_in(srcImagePoints3D, imgOriPoint.x + imgSizeIn3d.width, imgOriPoint.y + imgSizeIn3d.height, imgOriPoint.z);
     
-    cv::resize(srcImage, srcImage, cv::Size(srcImage.size().width, srcImage.size().width * (imgSizeIn3d.height / imgSizeIn3d.width)));
+
+    // std::cout << srcImageToPaste.size() << std::endl;
+    cv::Mat srcImage;
+    cv::resize(srcImageToPaste, srcImage, cv::Size(srcImageToPaste.size().width, srcImageToPaste.size().width * (imgSizeIn3d.height / imgSizeIn3d.width)));
     // printf("test------------------------------------\n");
     if(!(offsetRvec.empty() && offsetTvec.empty()))
     {
@@ -330,7 +339,7 @@ void Draw3D::paste_image_perspective_3d(cv::Mat &srcImage, cv::Mat &dstImage, bo
 
         warpM = cv::getPerspectiveTransform(srcImagePoints2D, dstImagePoints2D);
         cv::Mat _dstImage;
-        cv::warpPerspective(srcImage, _dstImage, warpM, dstImage.size());
+        cv::warpPerspective(srcImage, _dstImage, warpM, dstImagePasteOn.size());
         
         if(remove_background_color)
         {
@@ -340,10 +349,10 @@ void Draw3D::paste_image_perspective_3d(cv::Mat &srcImage, cv::Mat &dstImage, bo
                                     dstImagePoints2D[3],
                                     dstImagePoints2D[2]};
             // std::cout << dstImage.empty() << std::endl;
-            cv::fillConvexPoly(dstImage, mask, 4, cv::Scalar(0, 0, 0));
+            cv::fillConvexPoly(dstImagePasteOn, mask, 4, cv::Scalar(0, 0, 0));
         }
         
-        dstImage = dstImage + _dstImage;
+        dstImagePasteOn = dstImagePasteOn + _dstImage;
     }
     
 }

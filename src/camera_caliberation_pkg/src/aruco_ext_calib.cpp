@@ -11,7 +11,7 @@
 #include <stdlib.h>
 
 #include "opencv2/opencv.hpp"  
-#include "apriltag/apriltag.h"    
+// #include "apriltag/apriltag.h"    
 #include "opencv2/aruco/charuco.hpp"  
   
 
@@ -84,13 +84,12 @@ int main(int argc, char *argv[])
     ArucoM arucoMarker(dictionaryName, ids, arucoRealLength, newCameraMatrix, newDisCoffes);
     vector<cv::Mat> arucoMarkerImgs;
 
-    vector<cv::String> imagePaths;
-
 
     Draw3D d3d(47.62, 1, 1, 1, newCameraMatrix, newDisCoffes);
     d3d.setparam_image_perspective_3d(newCameraMatrix, newDisCoffes, cv::Point3f(0, 0, 0), cv::Size(47.62 * 2, 47.62 * 2), 
                                         (cv::Mat_<float>(3, 1) << 0, 0, -PI/2));
 
+    vector<cv::String> imagePaths;
     imagePaths = cct::get_images_from_path(imageLoadPath, imageFormat);
 
 
