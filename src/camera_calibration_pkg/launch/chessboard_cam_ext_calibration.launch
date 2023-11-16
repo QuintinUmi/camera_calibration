@@ -1,0 +1,4 @@
+<launch>
+    <rosparam file="$(find camera_calibration_pkg)/config/setup_chessboard.yaml" command="load"/>
+    <node pkg="camera_calibration_pkg" type="chessboard_cam_ext_calibration" name="chessboard_cam_ext_calibration" output="screen"/>
+</launch>
