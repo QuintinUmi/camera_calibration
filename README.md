@@ -84,6 +84,16 @@ To use these nodes, please use launch file for transmitting server parameters.
 
 4. Remapping by ```cv::remap()``` function.
 
+### Example for Node "aruco_video_ext_calib"
+
+After the camera intrinsics calibrating, real-time external calibration can be performed using an Aruco Marker with known true dimensions. 
+The resulting rotation and translation matrices enable mapping from 3d space to 2d space. 
+A simple function of AR can be realized by inserting objects (pictures, point clouds, etc.) into the 3d space.
+
+<div align=center>
+        <img src="https://github.com/QuintinUmi/camera_caliberation/blob/source/src/image/output1.gif?raw=true" width="400"/><img src="https://github.com/QuintinUmi/camera_caliberation/blob/source/src/image/output3.gif?raw=true" width="400"/>
+</div>
+
 ## Launch File Description
 
 Please use launch command to run the nodes. Before use it, please edit the yaml file in ./config folder.
