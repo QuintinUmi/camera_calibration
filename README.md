@@ -54,7 +54,7 @@ To use these nodes, please use launch file for transmitting server parameters.
 <p align="center">
         <a href="https://github.com/QuintinUmi/camera_caliberation/">
             <img src="https://github.com/QuintinUmi/camera_calibration/blob/main/src/camera_calibration_pkg/config/distortion_gridpattern_compare1.png?raw=true" alt="distortion_gridpattern_compare1"/>
-            <img src="https://github.com/QuintinUmi/camera_calibration/blob/main/src/camera_calibration_pkg/config/distortion_gridpattern_compare2.png" alt="distortion_gridpattern_compare1"/>     
+            <img src="https://github.com/QuintinUmi/camera_calibration/blob/main/src/camera_calibration_pkg/config/distortion_gridpattern_compare2.png?raw=true" alt="distortion_gridpattern_compare1"/>     
         </a>
 </p>
 
