@@ -9,7 +9,6 @@ This project is a simple template for camera calibration in C++.
 
 
 ### Files Structure Description
-eg:
 
 ```
 camera_calibration_pkg
