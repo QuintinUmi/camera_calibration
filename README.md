@@ -39,12 +39,6 @@ camera_calibration_pkg
 
 ## Node File Description
 
-### This project includes 1 package (camera_calibration_pkg) and 3 nodes (camera_calibration; show_distorted_grid_pattern; undistortion_sample).
-
-Node "camera_calibration" is to do calibration for camera.
-Node "show_distorted_grid_pattern" can show the comparison between distorted and undistorted grid pattern for reference.
-Node "undistortion_sample" is a sample to show the image after undistortion proccess.
-
 To use these nodes, please use launch file for transmitting server parameters.
 
 ### Example for Node "show_distorted_grid_pattern"
