@@ -1,6 +1,6 @@
-# Camera_Caliberation
+# Camera_Calibration
 
-This project is a simple template for camera caliberation in C++.
+This project is a simple template for camera calibration in C++.
 
 [![GitHub](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.swo.moe%2Fstats%2Fgithub%2FQuintinUmi&query=count&color=181717&label=GitHub&labelColor=282c34&logo=github&suffix=+follows&cacheSeconds=3600)](https://github.com/QuintinUmi)
 
@@ -12,26 +12,26 @@ This project is a simple template for camera caliberation in C++.
 eg:
 
 ```
-camera_caliberation_pkg
+camera_calibration_pkg
         ├── CMakeLists.txt
         ├── config
-        │   ├── caliberation_param.yaml
+        │   ├── calibration_param.yaml
         │   └── setup.yaml
         ├── include
-        │   ├── camera_caliberation_chessboard.h
+        │   ├── camera_calibration_chessboard.h
         │   ├── param_code.h
         │   └── undistortion.h
         ├── launch
-        │   ├── camera_caliberation.launch
+        │   ├── camera_calibration.launch
         │   ├── opencv_undistortion_time_cost_test.launch
         │   ├── show_distorted_grid_pattern.launch
         │   └── undistortion.launch
         ├── lib
-        │   ├── camera_caliberation_chessboard.cpp
+        │   ├── camera_calibration_chessboard.cpp
         │   └── undistortion.cpp
         ├── package.xml
         └── src
-            ├── camera_caliberation.cpp
+            ├── camera_calibration.cpp
             ├── show_distorted_grid_pattern.cpp
             └── undistortion_sample.cpp
 ```
@@ -40,9 +40,9 @@ camera_caliberation_pkg
 
 ## Node File Description
 
-### This project includes 1 package (camera_caliberation_pkg) and 3 nodes (camera_caliberation; show_distorted_grid_pattern; undistortion_sample).
+### This project includes 1 package (camera_calibration_pkg) and 3 nodes (camera_calibration; show_distorted_grid_pattern; undistortion_sample).
 
-Node "camera_caliberation" is to do caliberation for camera.
+Node "camera_calibration" is to do calibration for camera.
 Node "show_distorted_grid_pattern" can show the comparison between distorted and undistorted grid pattern for reference.
 Node "undistortion_sample" is a sample to show the image after undistortion proccess.
 
@@ -52,7 +52,7 @@ To use these nodes, please use launch file for transmitting server parameters.
 
 <br />
 <p align="center">
-        <a href="https://github.com/QuintinUmi/camera_caliberation/">
+        <a href="https://github.com/QuintinUmi/camera_calibration/">
             <img src="https://github.com/QuintinUmi/camera_calibration/blob/main/src/camera_calibration_pkg/config/distortion_gridpattern_compare1.png?raw=true" alt="distortion_gridpattern_compare1"/>
             <img src="https://github.com/QuintinUmi/camera_calibration/blob/main/src/camera_calibration_pkg/config/distortion_gridpattern_compare2.png?raw=true" alt="distortion_gridpattern_compare1"/>     
         </a>
