@@ -1,6 +1,6 @@
-# Camera_Caliberation
+# Camera_Calibration
 
-This project is a simple template for camera caliberation in C++.
+This project is a simple template for camera calibration in C++.
 
 [![GitHub](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.swo.moe%2Fstats%2Fgithub%2FQuintinUmi&query=count&color=181717&label=GitHub&labelColor=282c34&logo=github&suffix=+follows&cacheSeconds=3600)](https://github.com/QuintinUmi)
 
@@ -12,54 +12,37 @@ This project is a simple template for camera caliberation in C++.
 eg:
 
 ```
-camera_caliberation_pkg
-    ├── CMakeLists.txt
-    ├── config
-    │   ├── caliberation_param.yaml
-    │   ├── distortion_gridpattern_compare1.png
-    │   ├── distortion_gridpattern_compare2.png
-    │   ├── setup_aruco.yaml
-    │   ├── setup_chessboard.yaml
-    │   └── setup_ros.yaml
-    ├── include
-    │   ├── camera_caliberation_tool.h
-    │   ├── drawing_tool.h
-    │   ├── param_code.h
-    │   └── undistortion.h
-    ├── launch
-    │   ├── aruco_ext_calib.launch
-    │   ├── aruco_marker_generate.launch
-    │   ├── aruco_video_ext_calib.launch
-    │   ├── camera_caliberation.launch
-    │   ├── chessboard_cam_ext_caliberation.launch
-    │   ├── opencv_undistortion_time_cost_test.launch
-    │   ├── show_distorted_grid_pattern.launch
-    │   └── undistortion.launch
-    ├── lib
-    │   ├── aruco_tool.cpp
-    │   ├── camera_caliberation_tool.cpp
-    │   ├── drawing_tool.cpp
-    │   └── undistortion.cpp
-    ├── package.xml
-    └── src
-        ├── aruco_ext_calib.cpp
-        ├── aruco_marker_generate.cpp
-        ├── aruco_video_ext_calib.cpp
-        ├── camera_caliberation.cpp
-        ├── chessboard_cam_ext_caliberation.cpp
-        ├── opencv_undistortion_time_cost_test.cpp
-        ├── show_distorted_grid_pattern.cpp
-        └── undistortion_sample.cpp
-
+camera_calibration_pkg
+        ├── CMakeLists.txt
+        ├── config
+        │   ├── calibration_param.yaml
+        │   └── setup.yaml
+        ├── include
+        │   ├── camera_calibration_chessboard.h
+        │   ├── param_code.h
+        │   └── undistortion.h
+        ├── launch
+        │   ├── camera_calibration.launch
+        │   ├── opencv_undistortion_time_cost_test.launch
+        │   ├── show_distorted_grid_pattern.launch
+        │   └── undistortion.launch
+        ├── lib
+        │   ├── camera_calibration_chessboard.cpp
+        │   └── undistortion.cpp
+        ├── package.xml
+        └── src
+            ├── camera_calibration.cpp
+            ├── show_distorted_grid_pattern.cpp
+            └── undistortion_sample.cpp
 ```
 
 <br />
 
 ## Node File Description
 
-### This project includes 1 package (camera_caliberation_pkg) and 3 nodes (camera_caliberation; show_distorted_grid_pattern; undistortion_sample).
+### This project includes 1 package (camera_calibration_pkg) and 3 nodes (camera_calibration; show_distorted_grid_pattern; undistortion_sample).
 
-Node "camera_caliberation" is to do caliberation for camera.
+Node "camera_calibration" is to do calibration for camera.
 Node "show_distorted_grid_pattern" can show the comparison between distorted and undistorted grid pattern for reference.
 Node "undistortion_sample" is a sample to show the image after undistortion proccess.
 
@@ -69,7 +52,7 @@ To use these nodes, please use launch file for transmitting server parameters.
 
 <br />
 <p align="center">
-        <a href="https://github.com/QuintinUmi/camera_caliberation/">
+        <a href="https://github.com/QuintinUmi/camera_calibration/">
             <img src="https://github.com/QuintinUmi/camera_calibration/blob/main/src/camera_calibration_pkg/config/distortion_gridpattern_compare1.png?raw=true" alt="distortion_gridpattern_compare1"/>
             <img src="https://github.com/QuintinUmi/camera_calibration/blob/main/src/camera_calibration_pkg/config/distortion_gridpattern_compare2.png?raw=true" alt="distortion_gridpattern_compare1"/>     
         </a>
