@@ -8,7 +8,7 @@ This repository is for camera calibration in C++.
 <br />
 
 
-### Files Structure Description
+## Files Structure Description
 
 ```
 camera_calibration_pkg
@@ -37,7 +37,7 @@ camera_calibration_pkg
 
 <br />
 
-## Node File Description
+## Node File Example
 
 To use these nodes, please use launch file for transmitting server parameters.
 
