@@ -55,7 +55,7 @@ To use these nodes, please use launch file for transmitting server parameters.
 
 1. Use ```cv::getOptimalNewCameraMatrix()``` and ```cv::initUndistortRectifyMap()``` to get map1 and map2. Map1 contains a mapping table on (x, y) which refer to the source gridpattern image pixel, and map2 is a mapping table on y for refinement of the image. Map1 and map2 is a mapping from distorted image to undistorted image.
 2. Find a mapping from undistorted image to distorted image for drawing a distorted gridpattern from a uniform grid pattern:
-   Assume $\ X$ is the original image matrix, $\ X'$ is the target image processed by undistortion, $\ X''$ is the distorted gridpattern image we need to generate, and $\ T$ is the transform matrix. We have
+   Assume $\ X$ is the original image matrix, $\ X'$ is the target image processed by undistortion, $\ X''$ is the distorted gridpattern image we need to generate, and $\ T$ is the undistortion transform matrix. We have
 
    $\ X' = TX$  
    $\ ΔX = X - X' = X - TX = (I - T)X$  
