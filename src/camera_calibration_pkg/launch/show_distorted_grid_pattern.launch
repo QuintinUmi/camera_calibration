@@ -1,0 +1,4 @@
+<launch>
+    <rosparam file="$(find camera_calibration_pkg)/config/setup_chessboard.yaml" command="load"/>
+    <node pkg="camera_calibration_pkg" type="show_distorted_grid_pattern" name="show_distorted_grid_pattern" output="screen"/>
+</launch>

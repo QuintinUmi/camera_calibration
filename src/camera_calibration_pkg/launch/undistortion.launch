@@ -1,0 +1,4 @@
+<launch>
+    <rosparam file="$(find camera_calibration_pkg)/config/setup_chessboard.yaml" command="load"/>
+    <node pkg="camera_calibration_pkg" type="undistortion" name="undistortion" output="screen"/>
+</launch>
