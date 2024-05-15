@@ -14,18 +14,17 @@
 // #include "apriltag/apriltag.h"    
 #include "opencv2/aruco/charuco.hpp"  
   
-
-
 #include <yaml-cpp/yaml.h>
 
 #include "image_transport/image_transport.h"
 
-#include "drawing_tool.h"
-#include "param_code.h"
+#include "aruco_tool.h"
+// #include "drawing_tool.h"
+// #include "param_code.h"
 
 
 using namespace std;
-using namespace drt;
+// using namespace drt;
 
 
 ArucoM::ArucoM()
@@ -322,7 +321,7 @@ void ArucoM::aruco_marker_save(cv::String imageSavePath, cv::String imageFormat,
     cv::String saveFileName;
     vector<vector<cv::Point2f>> markerCorners;
     vector<int> markerIds;
-    Draw3D d3d;
+    // Draw3D d3d;
     vector<int> markerIdss;
     markerIdss.emplace_back(5);
     // arucoMarkerImages = this->generate_aruco_marker(dictionaryName, markerIdss, 500);
@@ -330,7 +329,34 @@ void ArucoM::aruco_marker_save(cv::String imageSavePath, cv::String imageFormat,
     { 
         processImg = cv::Mat(arucoMarkerImages[i].size(), CV_8U, cv::Scalar(255));
         
-        d3d.center_image_scale(arucoMarkerImages[i], processImg, 0.5, 0.5, 1, 0, cv::Scalar(255));
+        // d3d.center_image_scale(arucoMarkerImages[i], processImg, 0.5, 0.5, 1, 0, cv::Scalar(255));
+
+
+        float srcH = arucoMarkerImages[i].size().height;
+        float srcW = arucoMarkerImages[i].size().width;
+        float cX = srcW / 2;
+        float cY = srcH / 2;
+
+        float scaleX = 0.5;
+        float scaleY = 0.5;
+        int flags = 1;
+        int borderMode = 0;
+        cv::Scalar borderValue(255);
+
+        cv::Point2f srcP[] = {  cv::Point2f(srcW, 0), 
+                                cv::Point2f(srcW ,srcH), 
+                                cv::Point2f(0 ,srcH)
+                            };
+
+        cv::Point2f dstP[] = {  cv::Point2f((srcW - cX) * scaleX + cX, (0 - cY) * scaleY + cY), 
+                                cv::Point2f((srcW - cX) * scaleX + cX, (srcH - cY) * scaleY + cY), 
+                                cv::Point2f((0 - cX) * scaleX + cX, (srcH - cY) * scaleY + cY)
+                            };
+
+        cv::Mat warpM = cv::getAffineTransform(srcP, dstP);
+        cv::warpAffine(arucoMarkerImages[i], processImg, warpM, arucoMarkerImages[i].size(), flags, borderMode, borderValue);
+
+
         cv::aruco::detectMarkers(processImg, markerDictionary, markerCorners, markerIds);
         saveFileName = imageSavePath + cv::String("id_") + std::to_string(markerIds[0]) + 
                                         cv::String("--dictName_") + std::to_string(dictionaryName) + 
