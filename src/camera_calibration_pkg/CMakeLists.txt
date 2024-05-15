@@ -146,12 +146,16 @@ add_library(undistortion_lib
 add_library(drawing_tool_lib
   include include/drawing_tool.h
   lib/drawing_tool.cpp
+)
+add_library(aruco_tool_lib
+  include include/aruco_tool.h
   lib/aruco_tool.cpp
 )
 
 add_dependencies(camera_calibration_lib ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(undistortion_lib ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(drawing_tool_lib ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(aruco_tool_lib ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 target_link_libraries(camera_calibration_lib
   ${catkin_LIBRARIES}
@@ -160,6 +164,9 @@ target_link_libraries(undistortion_lib
   ${catkin_LIBRARIES}
 )
 target_link_libraries(drawing_tool_lib
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(aruco_tool_lib
   ${catkin_LIBRARIES}
 )
 
@@ -226,6 +233,7 @@ target_link_libraries(chessboard_cam_ext_calibration
   ${OpenCV_LIBRARIES}
   camera_calibration_lib
   drawing_tool_lib
+  aruco_tool_lib
   undistortion_lib
   yaml-cpp
 )
@@ -235,6 +243,7 @@ target_link_libraries(aruco_marker_generate
   ${OpenCV_LIBRARIES}
   camera_calibration_lib
   drawing_tool_lib
+  aruco_tool_lib
   undistortion_lib
   yaml-cpp
 )
@@ -244,6 +253,7 @@ target_link_libraries(aruco_ext_calib
   ${OpenCV_LIBRARIES}
   camera_calibration_lib
   drawing_tool_lib
+  aruco_tool_lib
   undistortion_lib
   yaml-cpp
 )
@@ -253,6 +263,7 @@ target_link_libraries(aruco_video_ext_calib
   ${OpenCV_LIBRARIES}
   camera_calibration_lib
   drawing_tool_lib
+  aruco_tool_lib
   undistortion_lib
   yaml-cpp
 )

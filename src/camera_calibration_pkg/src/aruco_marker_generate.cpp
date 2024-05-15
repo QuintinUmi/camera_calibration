@@ -21,6 +21,7 @@
 
 #include "camera_calibration_tool.h"
 #include "drawing_tool.h"
+#include "aruco_tool.h"
 #include "param_code.h"
 
 
