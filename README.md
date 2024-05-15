@@ -1,6 +1,6 @@
 # Camera_Calibration
 
-This project is a simple template for camera calibration in C++.
+This repository is for camera calibration in C++.
 
 [![GitHub](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.swo.moe%2Fstats%2Fgithub%2FQuintinUmi&query=count&color=181717&label=GitHub&labelColor=282c34&logo=github&suffix=+follows&cacheSeconds=3600)](https://github.com/QuintinUmi)
 
@@ -8,43 +8,57 @@ This project is a simple template for camera calibration in C++.
 <br />
 
 
-### Files Structure Description
-eg:
+## Files Structure Description
 
 ```
 camera_calibration_pkg
-        ├── CMakeLists.txt
-        ├── config
-        │   ├── calibration_param.yaml
-        │   └── setup.yaml
-        ├── include
-        │   ├── camera_calibration_chessboard.h
-        │   ├── param_code.h
-        │   └── undistortion.h
-        ├── launch
-        │   ├── camera_calibration.launch
-        │   ├── opencv_undistortion_time_cost_test.launch
-        │   ├── show_distorted_grid_pattern.launch
-        │   └── undistortion.launch
-        ├── lib
-        │   ├── camera_calibration_chessboard.cpp
-        │   └── undistortion.cpp
-        ├── package.xml
-        └── src
-            ├── camera_calibration.cpp
-            ├── show_distorted_grid_pattern.cpp
-            └── undistortion_sample.cpp
+    │  CMakeLists.txt
+    │  package.xml
+    │
+    ├─config
+    │      calibration_param.yaml
+    │      distortion_gridpattern_compare1.png
+    │      distortion_gridpattern_compare2.png
+    │      setup_aruco.yaml
+    │      setup_chessboard.yaml
+    │      setup_ros.yaml
+    │
+    ├─include
+    │      camera_calibration_tool.h
+    │      drawing_tool.h
+    │      param_code.h
+    │      undistortion.h
+    │
+    ├─launch
+    │      aruco_ext_calib.launch
+    │      aruco_marker_generate.launch
+    │      aruco_video_ext_calib.launch
+    │      camera_calibration.launch
+    │      chessboard_cam_ext_calibration.launch
+    │      opencv_undistortion_time_cost_test.launch
+    │      show_distorted_grid_pattern.launch
+    │      undistortion.launch
+    │
+    ├─lib
+    │      aruco_tool.cpp
+    │      camera_calibration_tool.cpp
+    │      drawing_tool.cpp
+    │      undistortion.cpp
+    │
+    └─src
+            aruco_ext_calib.cpp
+            aruco_marker_generate.cpp
+            aruco_video_ext_calib.cpp
+            camera_calibration.cpp
+            chessboard_cam_ext_calibration.cpp
+            opencv_undistortion_time_cost_test.cpp
+            show_distorted_grid_pattern.cpp
+            undistortion_sample.cpp
 ```
 
 <br />
 
-## Node File Description
-
-### This project includes 1 package (camera_calibration_pkg) and 3 nodes (camera_calibration; show_distorted_grid_pattern; undistortion_sample).
-
-Node "camera_calibration" is to do calibration for camera.
-Node "show_distorted_grid_pattern" can show the comparison between distorted and undistorted grid pattern for reference.
-Node "undistortion_sample" is a sample to show the image after undistortion proccess.
+## Node File Example
 
 To use these nodes, please use launch file for transmitting server parameters.
 
@@ -62,7 +76,7 @@ To use these nodes, please use launch file for transmitting server parameters.
 
 1. Use ```cv::getOptimalNewCameraMatrix()``` and ```cv::initUndistortRectifyMap()``` to get map1 and map2. Map1 contains a mapping table on (x, y) which refer to the source gridpattern image pixel, and map2 is a mapping table on y for refinement of the image. Map1 and map2 is a mapping from distorted image to undistorted image.
 2. Find a mapping from undistorted image to distorted image for drawing a distorted gridpattern from a uniform grid pattern:
-   Assume $\ X$ is the original image matrix, $\ X'$ is the target image processed by undistortion, $\ X''$ is the distorted gridpattern image we need to generate, and $\ T$ is the transform matrix. We have
+   Assume $\ X$ is the original image matrix, $\ X'$ is the target image processed by undistortion, $\ X''$ is the distorted gridpattern image we need to generate, and $\ T$ is the undistortion transform matrix. We have
 
    $\ X' = TX$  
    $\ ΔX = X - X' = X - TX = (I - T)X$  
