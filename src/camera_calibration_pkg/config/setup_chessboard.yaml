@@ -2,19 +2,19 @@
 image_load_path: /home/quintinumi/project/camera_calibration_img/
 image_format: png
 
-chessboard_width: 6
-chessboard_height: 9
+# chessboard_width: 6
+# chessboard_height: 9
 
 # image_load_path: /home/quintinumi/project/IR_camera_calib_img/
 # image_format: png
 
 yaml_save_path: /home/quintinumi/project/ws_camera_calibration/src/camera_calibration/src/camera_calibration_pkg/config/
 
-# chessboard_width: 8
-# chessboard_height: 11
+chessboard_width: 6
+chessboard_height: 9
 square_size: 28.9
 
 criteria_iter_times: 1000000
 iter_difference: 0.00000001
 
-show_corners_image: false
+show_corners_image: true

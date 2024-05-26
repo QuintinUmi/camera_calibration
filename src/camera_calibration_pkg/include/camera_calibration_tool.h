@@ -63,8 +63,10 @@ namespace cct{
             cv::Mat rvecs; 
             cv::Mat tvecs;
 
-            cv::Mat newCameraMatrix;
-            cv::Mat newDisCoffes; 
+            cv::Mat newCameraMatrixAlpha1;
+            cv::Mat newDisCoffesAlpha1; 
+            cv::Mat newCameraMatrixAlpha0;
+            cv::Mat newDisCoffesAlpha0; 
             vector<vector<cv::Point3f>> newObjectPoints;
             vector<vector<cv::Point2f>> newImagePoints;
             

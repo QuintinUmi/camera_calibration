@@ -1,15 +1,15 @@
 
-image_save_path: /home/quintinumi/project/aruco_img/
+image_save_path: /home/quintinumi/project/ws_mid360_hikcamera_calibration/src/mid360_hikcamera_calibration/src/livox_hikcamera_cal/aruco_img/
 image_load_path: /home/quintinumi/project/hikcamera_aruco_img/
 image_format: png
 
 yaml_save_path: /home/quintinumi/project/ws_camera_calibration/src/camera_calibration/src/camera_calibration_pkg/config/
 
-dictionary_name: 10
-selected_ids: [62, 80, 150, 230]
-aruco_marker_size: 200
+dictionary_name: 11
+selected_ids: [12, 150, 364, 544, 712]
+aruco_marker_size: 300
 
-aruco_real_length: [47.62, 47.62, 47.62, 47.62]
+aruco_real_length: [164, 164, 164, 164, 164]
 
 # criteria_iter_times: 1000000
 # iter_difference: 0.00000001
