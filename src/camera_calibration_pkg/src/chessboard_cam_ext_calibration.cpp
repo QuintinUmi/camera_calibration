@@ -91,9 +91,9 @@ int main(int argc, char *argv[])
     rosHandle.param("yaml_save_path", yamlPath, cv::String("~/"));
     rosHandle.param("image_load_path", imagePath, cv::String("~/"));
     rosHandle.param("image_format", imageFormat, std::string("png"));
-    rosHandle.param("chessboard_width", chessboardSize.width, 6);
-    rosHandle.param("chessboard_height", chessboardSize.height, 8);
-    rosHandle.param("square_size", squareSize, 28.9);
+    rosHandle.param("chessboard_width", chessboardSize.width, 8);
+    rosHandle.param("chessboard_height", chessboardSize.height, 11);
+    rosHandle.param("square_size", squareSize, 25.44);
 
     cv::String intrinsicsPath = yamlPath + "calibration_param.yaml";
     cv::FileStorage fs(intrinsicsPath, cv::FileStorage::READ);
@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
     camCal.get_images_from_path(imagePath, imageFormat);
     CamCalExt Cce(newCameraMatrix, newDisCoffes);
     Draw3D d3d(28.9, 1, 1, 1);
-    cv::Mat testImg = cv::imread("/home/quintinumi/test.png"), testImgOp;
+    cv::Mat testImg = cv::imread("/home/quintinumi/project/camera_calibration_img/1.png"), testImgOp;
     d3d.center_image_scale(testImg, testImg, 1, -1);
     // CamCalExt Cce(cameraMatrix, disCoffes);
     // vector<vector<cv::Point3f>> wp = d3d.draw_ortho_coordinate_3d();
