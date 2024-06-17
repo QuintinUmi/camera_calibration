@@ -152,13 +152,13 @@ bool CamCalChessboard::calibration_process(bool cornerShow, int criteriaIterTime
 
     printf("Finished!\n");
 
-    printf("Camera Undistortion Caliberating...\n");
+    printf("Camera Undistortion alpha = 1 Caliberating...\n");
     fflush(stdout); 
 
     cv::Mat srcImage, undistortedImage;
     cv::Mat newCamMat, map1, map2;
 
-    newCamMat = cv::getOptimalNewCameraMatrix(this->cameraMatrix, this->disCoffes, this->imgSize, 0.0);
+    newCamMat = cv::getOptimalNewCameraMatrix(this->cameraMatrix, this->disCoffes, this->imgSize, 1.0);
     cv::initUndistortRectifyMap(this->cameraMatrix, this->disCoffes, cv::Mat(), newCamMat, this->imgSize, CV_32FC2, map1, map2);
 
     for(int i = 0; i < this->imagePaths.size(); i++)
@@ -194,11 +194,63 @@ bool CamCalChessboard::calibration_process(bool cornerShow, int criteriaIterTime
                         this->newImagePoints, 
                         this->imgSize, 
 
-                        this->newCameraMatrix, 
-                        this->newDisCoffes,
+                        this->newCameraMatrixAlpha1, 
+                        this->newDisCoffesAlpha1,
                         cache1, cache1);
 
     printf("Finished!\n");
+
+
+    this->newImagePoints.clear();
+    this->newObjectPoints.clear();
+    printf("Camera Undistortion alpha = 0 Caliberating...\n");
+    fflush(stdout); 
+
+    srcImage = cv::Mat(), undistortedImage = cv::Mat();
+    newCamMat = cv::Mat(), map1 = cv::Mat(), map2 = cv::Mat();
+
+    newCamMat = cv::getOptimalNewCameraMatrix(this->cameraMatrix, this->disCoffes, this->imgSize, 0.0);
+    cv::initUndistortRectifyMap(this->cameraMatrix, this->disCoffes, cv::Mat(), newCamMat, this->imgSize, CV_32FC2, map1, map2);
+
+    for(int i = 0; i < this->imagePaths.size(); i++)
+    {
+        srcImage = cv::imread(this->imagePaths[i]);
+
+        printf("Undistort and process image %d: ", i + 1);
+
+        cv::remap(srcImage, undistortedImage, map1, map2, cv::INTER_LINEAR);
+
+        imagePoints = this->find_image_chessboard_corners(&undistortedImage, cornerShow, criteriaIterTimes, iterDifference);
+        if(imagePoints.size())
+        {
+            objectPoints = this->find_object_chessboard_corners();
+
+            this->newImagePoints.emplace_back(imagePoints);
+            this->newObjectPoints.emplace_back(objectPoints);
+            printf("Success!\n");
+
+        }
+        else
+        {
+            printf("Faild!\n");
+            continue;
+        }
+        
+    }
+
+     printf("Processing...");
+    fflush(stdout); 
+    cv::calibrateCamera(this->newObjectPoints, 
+                        this->newImagePoints, 
+                        this->imgSize, 
+
+                        this->newCameraMatrixAlpha0, 
+                        this->newDisCoffesAlpha0,
+                        cache1, cache1);
+
+    printf("Finished!\n");
+
+
 
     return true;
 }
@@ -223,8 +275,10 @@ bool CamCalChessboard::save_calibration_parm_yaml(string savePath)
     // fs << "rvecs" << this->rvecs;
     // fs << "tvecs" << this->tvecs;
 
-    fs << "newCameraMatrix" << this->newCameraMatrix;
-    fs << "newDisCoffes" << this->newDisCoffes;
+    fs << "newCameraMatrixAlpha1" << this->newCameraMatrixAlpha1;
+    fs << "newDisCoffesAlpha1" << this->newDisCoffesAlpha1;
+    fs << "newCameraMatrixAlpha0" << this->newCameraMatrixAlpha0;
+    fs << "newDisCoffesAlpha0" << this->newDisCoffesAlpha0;
 
     fs.release(); 
 
